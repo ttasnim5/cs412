@@ -1,0 +1,15 @@
+{% extends "./base.html" %}
+
+{% block title %}All Quotes - Quote App{% endblock %}
+
+{% block content %}
+    <h1>All Quotes and Images</h1>
+    <div class="quotes-container">
+        {% for quote, image in quotes_and_images %}
+            <div class="quote-item">
+                <img src=" {{ image }}" style="max-width: 200px;">
+                <blockquote><p>{{ quote|safe }}</p></blockquote>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
