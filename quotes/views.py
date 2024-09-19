@@ -37,7 +37,7 @@ def quote(request):
         'quote': random.choice(quotes),
         'image': random.choice(images),
     }
-    return render(request, 'quotes/home.html', context)
+    return render(request, 'quotes/quote.html', context)
 
 def show_all(request):
     # Zip quotes and images together for easier iteration in the template
