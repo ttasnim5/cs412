@@ -1,6 +1,0 @@
-# create Procfile:
-# contents: 
-web: gunicorn cs412.wsgi --log-file -
-
-
-# cs412 directory is in bu fall 24/cs412
