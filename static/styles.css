@@ -1,54 +1,34 @@
 body {
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     line-height: 1.6;
     margin: 0;
-    padding: 0;
 }
 
 h1 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 1.75rem;
-    padding: 1rem;
+    margin: 1rem;
 }
 
 h2 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1.50rem;
-    padding: 1rem;
     font-weight: normal;
 }
 
 p {
     font-size: 1.25rem;
+    margin: 3rem;
 }
 
-header {
+td {
+    padding: 1rem;
+}
+
+.quote-header {
     background-color: #3e5b3f;
     color: #fff;
-}
-
-nav ul {
-    list-style-type: none;
-    display: inline-flex;
-    padding: 0;
-}
-
-nav ul li {
-    font-size: 1.5rem;
-    margin-right: .5rem;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: white;
-    padding: 1rem;
-    display: block;
-    transition: background-color 0.3s ease, color 0.3s ease;
-
-    &:hover {
-      background-color: #6e9561;  
-      color: #ffd000;
-    }
+    padding: 1rem 0;
 }
 
 .quotes-container {
@@ -64,6 +44,113 @@ nav ul li a {
     box-shadow: 10px 10px 5px #aeadad;
 }
 
-td {
+nav ul {
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
     padding: 1rem;
+    display: block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #6e9561;
+    color: #ffd000;
+}
+
+.order, .confirmation {
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form > * {
+    margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+select {
+    width: 50%;
+    padding: 1rem;
+    font-size: 1.25rem;
+    border: 1px solid #4831f4;
+    border-radius: 3px;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+input[type="submit"] {
+    background-color: #110096;
+    color: white;
+    border: none;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 1.25rem;;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #4831f4;
+}
+
+.restaurant-header {
+    background-color: #4831f4;
+    color: #fff;
+    padding: 1rem 0;
+}
+
+.add-ons {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #4831f4;
+    border-radius: 1rem;
+    color: white;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+ul {
+    list-style: none;
+}
+
+.bake-main-page {
+    display: flex;
+    width: fit-content;
+    background-color: #d4cfff;
+    flex-direction: row; /* Aligns image and blurb side by side */
+    align-items: center; /* Vertically centers the image and blurb */
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto; /* Centers the whole div on the page */
+}
+
+.bake-main-page img {
+    max-width: 100%; 
+    height: auto; /* Keeps the image aspect ratio */
+    margin-right: 2rem; /* Adds margin between the image and the blurb */
+}
+
+.bake-main-page p {
+    margin: 0;
+    max-width: 400px; /* Optionally control the width of the blurb */
+    text-align: left;
 }

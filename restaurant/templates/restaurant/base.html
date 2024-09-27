@@ -1,0 +1,23 @@
+<!-- formdata/templates/formdata/base.html -->
+{% load static %}
+<html>
+    <head>
+        <title>Sweets Galore</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+
+    <header class="restaurant-header">
+        <nav>
+            <ul>
+                <h1>Sweets Galore</h1>
+                <li><a href="{% url 'main' %}">Home</a></li>
+                <li><a href="{% url 'order' %}">Place an Order</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <body>
+    {% block content %}
+    {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,54 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+<div class="order">
+    <h1>Place Your Order</h1>
+
+    <form action="{% url 'confirmation' %}" method="POST">
+        {% csrf_token %}
+
+        <div class="order-details">
+            <p>Name: <input type="text" name="name" required></p>
+            <p>Phone Number: <input type="tel" name="phone" required></p>
+            <p>Email: <input type="email" name="email" required></p>
+        </div>
+
+        <div class="menu-options">
+            <h2>Dessert Base</h2>
+            <select name="base" required>
+                <option value="waffle">Waffle Base ($4)</option>
+                <option value="crepe">Crepe Base ($4)</option>
+                <option value="pancake">Pancake Base ($4)</option>
+                <option value="croissant">Croissant Base ($3)</option>
+                <option value="biscuit">Biscuit Base ($3)</option>
+            </select>
+
+            <div class="add-ons">
+                <div>
+                    <h2>Daily Special</h2>
+                    <input type="checkbox" name="daily_special" value="{{ daily_special }}">
+                    {{ daily_special }} (+ $1)    
+                </div>
+                
+                <div>
+                    <h2>Sauces</h2>
+                    {% for sauce in sauces %}
+                        <input type="checkbox" name="sauces" value="{{ sauce }}">
+                        {{ sauce }} (+ $0.30)<br>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <h2>Toppings</h2>
+                    {% for topping in toppings %}
+                        <input type="checkbox" name="toppings" value="{{ topping }}">
+                        {{ topping }} (+ $0.30)<br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="Place Order">
+    </form>
+</div>
+{% endblock %}
