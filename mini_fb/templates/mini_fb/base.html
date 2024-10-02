@@ -1,0 +1,21 @@
+<!-- formdata/templates/formdata/base.html -->
+{% load static %}
+<html>
+    <head>
+        <title>Mini Facebook!</title>
+        <link rel="stylesheet" href="{% static 'fb.css' %}">
+    </head>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'show_all' %}"><h1>All Profiles</h1></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <body>
+    {% block content %}
+    {% endblock %}
+    </body>
+</html>
