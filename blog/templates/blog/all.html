@@ -1,13 +1,21 @@
-
+{% extends 'blog/base.html' %}
+{% block content %}
 <h1>showing all articles</h1>
 
 <div>
     {% for a in articles %}
     <div>
+        <a href="{% url 'article' a.pk %}">
         <h2>{{a.title}}</h2>
+        </a>
         <h3>by {{a.author}} at {{a.published}}</h3>
         <p>{{a.text}}</p>
+
+        <a href="{% url 'article' a.pk %}">
         <img src="{{a.image_url}}" style="max-width: 200px;">
+        </a>
     </div>
     {% endfor %}
 </div>
+
+{% endblock %}

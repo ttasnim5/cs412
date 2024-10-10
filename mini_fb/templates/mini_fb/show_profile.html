@@ -1,0 +1,36 @@
+{% extends 'mini_fb/base.html' %}
+{% block content %}
+
+<main class="profile-page">
+    <div class="profile-container">
+        <div class="image-container">
+            <img src="{{profile.image_url}}" alt="Profile Image" >
+            <div class="create-message">
+                <h2>New Status Message:</h2>
+                <form method="post" action="{% url 'show_profile' profile.pk %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Post Message">
+                </form>
+            </div>
+        </div>
+        <div class="right-design-block">
+            <div class="profile-info">
+                <h2>{{profile.first_name}} {{profile.last_name}}</h2>
+                <h3>from {{profile.city}}</h3>
+                <h3>{{profile.email}}</h3>
+            </div>
+            <div>
+                <h2>Status Messages</h2>
+                {% for m in profile.get_status_messages %}
+                <div class="status-message">
+                    <h3>{{ m.message }}</h3>
+                    <p>{{ m.timestamp }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,21 +1,18 @@
-
 {% extends 'mini_fb/base.html' %}
 {% block content %}
 
-<h1>Showing all user profiles</h1>
-
-<div>
-    <table>
-        {% for p in profiles %}
-        <tr>
-            <td><img src="{{p.image_url}}" class="cover"></td>
-            <td>
-                <h2>{{p.first_name}} {{p.last_name}}</h2>
-                <h3>from {{p.city}}<h3>
-                <h3>{{p.email}}</h3>
-            </td>
-        </tr>       
-        {% endfor %}
-    </table> 
+<div class="design">
+    <div class="bg-design-block"></div>
+    {% for p in profiles %}
+    <a href="{% url 'show_profile' p.pk %}">
+        <div class="profile-card">
+            <img src="{{p.image_url}}" alt="{{p.first_name}} {{p.last_name}}">
+            <h2>{{p.first_name}} {{p.last_name}}</h2>
+            <h3>from {{p.city}}</h3>
+            <h3>{{p.email}}</h3>
+        </div>
+    </a>
+    {% endfor %}
 </div>
 {% endblock %}
+        
