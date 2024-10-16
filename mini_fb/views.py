@@ -35,7 +35,7 @@ class ShowProfilePageView(DetailView):
 class CreateProfilePageView(CreateView):
     model = Profile 
     form_class = CreateProfileForm  # form class to use for creating profiles
-    template_name = 'mini_fb/create_new_profile.html'  
+    template_name = 'mini_fb/create_profile_form.html'  
 
     def form_valid(self, form):
         # this is called when valid form data has been POSTed
