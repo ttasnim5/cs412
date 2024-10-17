@@ -1,57 +1,107 @@
-from . models import *
-from . forms import *
-from django.views.generic import ListView, DetailView, CreateView
-from django.urls import reverse
+# blog/views.py
+# views to show the blog application
+from typing import Any
+from django.shortcuts import render
+from django.urls import reverse ## NEW
 import random
 
+from . models import * 
+from . forms import * ## NEW
+from django.views.generic import ListView, DetailView, CreateView ## NEW
+
+# class-based view
 class ShowAllView(ListView):
-    '''A view to show all Articles'''
+    '''A view to show all Articles.'''
+
     model = Article
-    template_name = 'blog/all.html'
+    template_name = 'blog/show_all.html'
     context_object_name = 'articles'
-    
+
 class RandomArticleView(DetailView):
-    '''Show the details for one article.'''
+    '''Show one article selected at random.'''
+
     model = Article
     template_name = 'blog/article.html'
-    context_object_name = 'article'
-    # specify the object to show:
+    context_object_name = "article" # note the singular name
+
+    ## AttributeError: Generic detail view RandomArticleView must be called with either an object pk or a slug in the URLconf.
+    ## one solution: implement the get_object method.
     def get_object(self):
-        '''Return one Article object chosen at random.'''
-        all_articles = Article.objects.all()
+        '''Return the instance of the Article object to show.'''
+
+        # get all articles
+        all_articles = Article.objects.all() # SELECT *
+        # pick one at random
         return random.choice(all_articles)
+    
 
 class ArticleView(DetailView):
-    '''show one particle by primary key'''
+    '''Show one article by its primary key.'''
+
     model = Article
     template_name = 'blog/article.html'
-    context_object_name = 'article'
+    context_object_name = "article" # note the singular name
 
-## write the CreateCommentView
-from .forms import CreateCommentForm
+
 class CreateCommentView(CreateView):
-    '''A view to create a new comment and save it to the database.
-    On GET: sends back the form
-    On POST: read the form data, create an instance of Comment, save to database
+    '''a view to show/process the create comment form:
+    on GET: sends back the form
+    on POST: read the form data, create an instance of Comment; save to database; ??
     '''
+
     form_class = CreateCommentForm
     template_name = "blog/create_comment_form.html"
 
+    # what to do after form submission?
+    def get_success_url(self) -> str:
+        '''return the URL to redirect to after sucessful create'''
+        #return "/blog/show_all"
+        #return reverse("show_all")
+        return reverse("article", kwargs=self.kwargs)
+    
     def form_valid(self, form):
-        '''
-        Handle the form submission. We need to set the foreign key by 
-        attaching the Article to the Comment object.
-        We can find the article PK in the URL (self.kwargs).
-        '''
-        print(form.cleaned_data)
+        '''this method executes after form submission'''
+
+        print(f'CreateCommentView.form_valid(): form={form.cleaned_data}')
+        print(f'CreateCommentView.form_valid(): self.kwargs={self.kwargs}')
+
+        # find the article with the PK from the URL
+        # self.kwargs['pk'] is finding the article PK from the URL
         article = Article.objects.get(pk=self.kwargs['pk'])
-        # print(article)
+
+        # attach the article to the new Comment 
+        # (form.instance is the new Comment object)
         form.instance.article = article
+
+        # delegaute work to the superclass version of this method
         return super().form_valid(form)
     
-        ## show how the reverse function uses the urls.py to find the URL pattern
-    def get_success_url(self) -> str:
-        '''Return the URL to redirect to after successfully submitting form.'''
-        # return "/blog/all"
-        # return reverse('all')
-        return reverse('article', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        '''
+        build the template context data --
+        a dict of key-value pairs.'''
+
+        # get the super class version of context data
+        context = super().get_context_data(**kwargs)
+
+        # find the article with the PK from the URL
+        # self.kwargs['pk'] is finding the article PK from the URL
+        article = Article.objects.get(pk=self.kwargs['pk'])
+
+        # add the article to the context data
+        context['article'] = article
+
+        return context
+    
+class CreateArticleView(CreateView):
+    '''A view to create a new Article and save it to the database.'''
+    form_class = CreateArticleForm
+    template_name = "blog/create_article_form.html"
+    
+    def form_valid(self, form):
+        '''Handle the form submission to create a new Article object.'''
+        print(f'CreateArticleView: form.cleaned_data={form.cleaned_data}')
+        # delegate work to the superclass version of this method
+        return super().form_valid(form)
+## read debug output in Console. Look at the form fields.

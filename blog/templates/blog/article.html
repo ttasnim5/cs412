@@ -1,41 +1,54 @@
-<!-- blog/templates/blog/article.html -->
+<!-- blog/templats/blog/article.html -->
 {% extends 'blog/base.html' %}
 
-<h1>{{article.title}}</h1>
 {% block content %}
 
-<main>
-    <article>
-        {% if article.image_url %}
-        <img src="{{article.image_url}}" alt="{{article.image_url}}" style="max-width: 200px;">
-        {% endif %}
+<h1>{{article.title}}</h1>
+
+<main class="grid-container"> <!-- was <div> -->
+    <article class="featured"> <!-- was <div> -->
         
-        <div>
-        <h2>{{article.title}}</h2>
-        <strong>by {{article.author}} at {{article.published}}</strong>
-        <p>
-        {{article.text}}
-        </p>
-        </div>
-    </article>
+        <img src="{{article.image_file.url}}" alt="{{article.image_url}}">
 
-    <div>
-        <h2>Comments</h2>
-
-        <div>
-            <h3><a href="{% url 'create_comment' article.pk %}">Create a comment</a></h3>
-        </div>
-        {% for c in article.get_comments %}
-        <article>
-            <div>
-            <strong>by {{c.author}} at {{c.published}}</strong>
+        <div> <!-- added this! -->
+            <h2>{{article.title}}</h2>
+            <h3>by {{article.author}} at {{article.published}}</h3>
             <p>
-            {{c.text}}
-            </div>
-        </article>
-        {% endfor %}
-    </div>
+                {{article.text}}
+            </p>       
 
-    
-</main>
+            <h4><a href="{% url 'create_comment' article.pk %}">
+                Add a comment</a>
+            </h4>
+        </div> <!-- added this! -->
+ 
+    </article> <!-- was <div> -->
+
+    <!-- display the comments -->
+    <div>
+        {% if article.get_comments %}
+            <h2>Comments</h2>
+            <!-- call the Article's get_comments() method -->
+            <!-- {{article.get_comments}}  -->
+        
+            {% for c in article.get_comments %}
+            <div>
+                <strong>by {{c.author}} and {{c.published}} </strong>
+                <p>
+                    {{c.text}}
+                </p>
+
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <div>
+                <h2>No comments</h2>
+            </div>
+        {% endif %}
+
+
+    </div>
+</main> <!-- was <div> -->
+
 {% endblock %}

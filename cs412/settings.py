@@ -127,16 +127,25 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 STORAGES = {
-    # Enable WhiteNoise's GZip and Brotli compression of static assets:
-    # https://whitenoise.readthedocs.io/en/latest/django.html#add-compression-and-caching-support
+    # WhiteNoise for static file storage
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+    # Default file storage for media uploads
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",  # Change this if using a cloud storage backend
+        "OPTIONS": {
+            "location": BASE_DIR / "media",  # Folder where uploaded media files are stored
+        },
     },
 }
 
 import os # operating system library
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'static'),]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

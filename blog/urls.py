@@ -1,11 +1,17 @@
-# blog/urls.py
+## blog/urls.py
+## description: the app-specific URLS for the blog application
+
 from django.urls import path
-from .views import * # our view class definition 
+from django.conf import settings
+from . import views
+
+# create a list of URLs for this app:
 urlpatterns = [
-    # map the URL (empty string) to the view
-    path('', RandomArticleView.as_view(), name='random'),
-    path('all', ShowAllView.as_view(), name='all'), 
-    path('article/<int:pk>', ArticleView.as_view(), name='article'), 
-    # path('create_comment', CreateCommentView.as_view(), name='create_comment'),
-    path('article/<int:pk>/create_comment', ArticleView.as_view(), name='article'), 
+    # path(url, view, name)
+    path(r'', views.RandomArticleView.as_view(), name="random"), 
+    path(r'show_all', views.ShowAllView.as_view(), name="show_all"), 
+    path(r'article/<int:pk>', views.ArticleView.as_view(), name="article"), 
+    #path(r'create_comment', views.CreateCommentView.as_view(), name="create_comment"), ## NEW
+    path(r'article/<int:pk>/create_comment', views.CreateCommentView.as_view(), name="create_comment"), ## NEW
+    path('create_article', views.CreateArticleView.as_view(), name='create_article'),
 ]
