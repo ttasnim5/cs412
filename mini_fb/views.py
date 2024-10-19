@@ -22,11 +22,21 @@ class ShowProfilePageView(DetailView):
     def post(self, request, *args, **kwargs):
         # handles POST requests (i.e., form submissions)
         self.object = self.get_object()  # get profile object
-        form = CreateStatusMessageForm(request.POST)  # create a form instance with the submitted data
+        form = CreateStatusMessageForm(request.POST, request.FILES)  # create a form instance with the submitted data
+        
         if form.is_valid():
             status_message = form.save(commit=False)  # create a new StatusMessage object
             status_message.profile = self.object  # add new status message to profile
             status_message.save()  # save the status message to the database
+            
+            # handle the image files
+            files = self.request.FILES.getlist('files')  # get the list of uploaded files (images)
+            for file in files:
+                image = Image()  # create a new Image object
+                image.message = status_message  # set the ForeignKey to the status message
+                image.image_file = file  # assign the file to the ImageField
+                image.save()  # save the Image object to the database
+
             return redirect('show_profile', pk=self.object.pk)  # redirect to the profile page
         else:
             return self.render_to_response(self.get_context_data(form=form))  # re-render the page with the form errors

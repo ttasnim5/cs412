@@ -7,9 +7,10 @@
             <img src="{{profile.image_url}}" alt="Profile Image" >
             <div class="create-message">
                 <h2>New Status Message:</h2>
-                <form method="post" action="{% url 'show_profile' profile.pk %}">
+                <form method="post" action="{% url 'show_profile' profile.pk %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
+                    <input type="file" name = "files" multiple />
                     <input type="submit" value="Post Message">
                 </form>
             </div>
