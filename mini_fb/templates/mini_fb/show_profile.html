@@ -25,6 +25,9 @@
                 {% for m in profile.get_status_messages %}
                 <div class="status-message">
                     <h3>{{ m.message }}</h3>
+                    {% for img in m.get_status_images %}
+                        <img src='{{img.image_file.url}}' alt='{{img.image_file.url}}' class="image-container">
+                    {% endfor %}
                     <p>{{ m.timestamp }}</p>
                 </div>
                 {% endfor %}
