@@ -1,0 +1,38 @@
+{% extends 'mini_fb/base.html' %}
+{% block content %}
+
+<main class="profile-page">
+    <div class="profile-container">
+        <div class="image-container">
+            <div class="create-message">
+                <h2>Update this message to...</h2>
+                <form method="post" action="{% url 'update_status' status_message.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>New Status Message:</h2>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="file" name = "files" multiple />
+                    <input type="submit" value="Update Message" class="button">
+                </form>
+                <form method="get" action="{% url 'show_profile' status_message.profile.pk %}">
+                    <input type="submit" value="Cancel" class="button">
+                </form>
+                
+            </div>
+        </div>
+        <div class="right-design-block">
+            <div>
+                <h2>Status Message:</h2>
+                <div class="status-message">
+                    <h3>{{ status_message.message }}</h3>
+                            {% for img in status_message.get_status_images %}
+                                <img src='{{img.image_file.url}}' alt='{{img.image_file.url}}' class="image-container">
+                            {% endfor %}
+                    <p>{{ status_message.timestamp }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

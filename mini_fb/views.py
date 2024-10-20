@@ -1,5 +1,6 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect
+from django.urls import reverse
 from .models import *
 from .forms import *
 
@@ -51,3 +52,44 @@ class CreateProfilePageView(CreateView):
         # this is called when valid form data has been POSTed
         self.object = form.save()  # save the new profile to the database
         return redirect('show_profile', pk=self.object.pk)  # redirect to the newly created profile's page
+    
+class UpdateProfileView(UpdateView):
+    model = Profile 
+    form_class = UpdateProfileForm  # form class to use for updating profiles
+    template_name = 'mini_fb/update_profile_form.html'  
+
+    def form_valid(self, form):
+        # this is called when valid form data has been POSTed
+        self.object = form.save()  # save the new profile to the database
+        return redirect('show_profile', pk=self.object.pk)  # redirect to the newly created profile's page
+    
+class DeleteStatusMessageView(DeleteView):
+    model = StatusMessage 
+    template_name = 'mini_fb/delete_status_form.html'  
+    context_object_name = 'status_message'  # name to use for the sm object in the template
+
+    def get_success_url(self): # redirect to the profile page after deletion
+        return reverse('show_profile', kwargs={'pk': self.object.profile.pk})
+    
+class UpdateStatusMessageView(UpdateView):
+    model = StatusMessage 
+    form_class = UpdateStatusMessageForm  # form class to use for updating sm's
+    template_name = 'mini_fb/update_status_form.html'  
+    context_object_name = 'status_message'
+
+# when do we need to override the post method ?
+    def form_valid(self, form): # this is called when valid form data has been POSTed
+        self.object = form.save()  # save the new profile to the database
+    
+        if form.is_valid(): # handle the image files
+            files = self.request.FILES.getlist('files')  # get the list of uploaded files (images)
+            for file in files:
+                image = Image()  # create a new Image object
+                image.message = self.object  # set the ForeignKey to the status message
+                image.image_file = file  # assign the file to the ImageField
+                image.save()  # save the Image object to the database
+
+            return redirect('show_profile', pk=self.object.profile.pk)  # redirect to the profile page
+        else:
+            return self.render_to_response(self.get_context_data(form=form))  # re-render the page with the form errors
+    

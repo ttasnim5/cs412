@@ -5,13 +5,18 @@
     <div class="profile-container">
         <div class="image-container">
             <img src="{{profile.image_url}}" alt="Profile Image" >
+            
+            <div class="button">
+                <a href="{% url 'update_profile' profile.pk %}">Update Profile</a>
+            </div>
+
             <div class="create-message">
                 <h2>New Status Message:</h2>
                 <form method="post" action="{% url 'show_profile' profile.pk %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="file" name = "files" multiple />
-                    <input type="submit" value="Post Message">
+                    <input type="submit" value="Post Message" class="button">
                 </form>
             </div>
         </div>
@@ -24,13 +29,17 @@
             <div>
                 <h2>Status Messages</h2>
                 {% for m in profile.get_status_messages %}
-                <div class="status-message">
-                    <h3>{{ m.message }}</h3>
-                    {% for img in m.get_status_images %}
-                        <img src='{{img.image_file.url}}' alt='{{img.image_file.url}}' class="image-container">
-                    {% endfor %}
-                    <p>{{ m.timestamp }}</p>
-                </div>
+                    <div class="status-message">
+                        <h3>{{ m.message }}</h3>
+                        {% for img in m.get_status_images %}
+                            <img src='{{img.image_file.url}}' alt='{{img.image_file.url}}' class="image-container">
+                        {% endfor %}
+                        <p>{{ m.timestamp }}</p>
+                        <div class="button-container">
+                            <div class="button"><a href="{% url 'delete_status' m.pk %}">Delete Message</a></div>
+                            <div class="button"><a href="{% url 'update_status' m.pk %}">Update Message</a></div>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>

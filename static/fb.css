@@ -110,7 +110,15 @@ body {
     font-size: .75rem;
 }
 
-input[type="submit"] {
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Add space between the buttons */
+    gap: 10px; /* Optional: add a gap between buttons */
+}
+    
+.button, input[type="submit"] {
+    flex: 1; /* Ensure buttons take up equal space */
+    text-align: center;
     margin: .25rem; 
     padding: 0.5rem 1rem; 
     background-color:antiquewhite;
@@ -122,8 +130,13 @@ input[type="submit"] {
     transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover {
+.button:hover, input[type="submit"]:hover {
     background-color: rgb(172, 140, 97); /* Darker color on hover */
+}
+
+.button a {
+    color: inherit; /* inherit color from parent (button) */
+    text-decoration: none; /* remove underline */
 }
 
 .right-design-block {

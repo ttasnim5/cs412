@@ -1,0 +1,24 @@
+{% extends 'mini_fb/base.html' %}
+{% block content %}
+
+<main class="profile-page">
+    <div class="create-profile-container">
+        <form method="post">
+            {% csrf_token %}
+            <div class="profile-info">
+                <h3>Want to update your profile information? Handle everything here!</h3>
+
+                <h2>Profile Information</h2>
+                <div class="create-message">
+                    {% for field in form %}
+                        <h3>{{ field.label }}</h3>
+                        {{ field }}
+                    {% endfor %}    
+                </div>
+            </div>
+            <input type="submit" value="Update Profile">
+        </form>
+    </div>
+</main>
+
+{% endblock %}
