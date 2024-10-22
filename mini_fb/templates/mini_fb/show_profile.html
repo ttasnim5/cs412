@@ -6,8 +6,9 @@
         <div class="image-container">
             <img src="{{profile.image_url}}" alt="Profile Image" >
             
-            <div class="button">
-                <a href="{% url 'update_profile' profile.pk %}">Update Profile</a>
+            <div class="button-container">
+                <div class="button"><a href="{% url 'update_profile' profile.pk %}">Update Profile</a></div>
+                <div class="button"><a href="{% url 'friend_suggestions' profile.pk %}">Make More Friends</a></div>
             </div>
 
             <div class="create-message">
@@ -43,6 +44,16 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
+    
+    <h2>Friends</h2>
+    <div class="friend-container">
+        
+        {% for f in profile.get_friends %}
+            <div class="status-message">
+                <a href="{% url 'show_profile' f.pk %}"><h3>{{ f }}</h3></a>
+            </div>
+        {% endfor %}
     </div>
 </main>
 

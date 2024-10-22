@@ -1,0 +1,20 @@
+{% extends 'mini_fb/base.html' %}
+{% block content %}
+
+<h2>These are some people you might like!</h2>
+<div class="design">
+    <div class="bg-design-block"></div>
+    {% for p in profiles %}
+    <a href="{% url 'show_profile' p.pk %}">
+        <div class="profile-card">
+            <img src="{{p.image_url}}" alt="{{p.first_name}} {{p.last_name}}">
+            <h2>{{p.first_name}} {{p.last_name}}</h2>
+            <h3>from {{p.city}}</h3>
+            <h3>{{p.email}}</h3>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+<div class="button"><a href="{% url 'show_profile' user.pk %}">Return to My Profile</a></div>
+{% endblock %}
+        

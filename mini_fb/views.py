@@ -1,5 +1,5 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.shortcuts import redirect
+from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from .models import *
 from .forms import *
@@ -93,3 +93,31 @@ class UpdateStatusMessageView(UpdateView):
         else:
             return self.render_to_response(self.get_context_data(form=form))  # re-render the page with the form errors
     
+
+class CreateFriendView(View):
+    def dispatch(self, request, *args, **kwargs):
+        # extract profile1 (p1) and profile2 (p2) from the URL parameters
+        p1 = get_object_or_404(Profile, pk=self.kwargs['pk'])
+        p2 = get_object_or_404(Profile, pk=self.kwargs['other_pk'])
+
+        p1.add_friend(p2)
+        # redirect to p1's profile page after creating the friendship
+        return redirect('show_profile', pk=p1.pk)
+
+class ShowFriendSuggestionsView(DetailView):
+    model = Profile
+    template_name = 'mini_fb/friend_suggestions.html'
+    context_object_name = 'profile'  # context for the user's profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.get_object()  
+        user_friends = profile.get_friends()
+
+        mutuals = set()  # set to avoid duplicates
+        for friend in user_friends:
+            mutuals.update(set(friend.get_friends()) - {profile})
+
+        context['profiles'] = list(mutuals)
+        context['user'] = profile
+        return context
