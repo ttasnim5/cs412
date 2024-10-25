@@ -104,6 +104,7 @@ class CreateFriendView(View):
         # redirect to p1's profile page after creating the friendship
         return redirect('show_profile', pk=p1.pk)
 
+
 class ShowFriendSuggestionsView(DetailView):
     model = Profile
     template_name = 'mini_fb/friend_suggestions.html'
@@ -116,8 +117,26 @@ class ShowFriendSuggestionsView(DetailView):
 
         mutuals = set()  # set to avoid duplicates
         for friend in user_friends:
-            mutuals.update(set(friend.get_friends()) - {profile})
+            mutuals.update(friend.get_friends())
+        
+        mutuals = mutuals - set(user_friends)
+        mutuals.discard(profile)
 
         context['profiles'] = list(mutuals)
         context['user'] = profile
+        return context
+
+
+class ShowNewsFeedView(DetailView):
+    model = Profile
+    template_name = 'mini_fb/news_feed.html'
+    context_object_name = 'news_feed'  # context for the user's profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.get_object()  
+        news_feed = profile.get_newsfeed()
+
+        context['news_feed'] = news_feed
+        context['profile'] = profile
         return context

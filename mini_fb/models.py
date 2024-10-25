@@ -28,11 +28,19 @@ class Profile(models.Model):
 
     def add_friend(self, other):
         '''Create a friendship between this profile and another, if not a duplicate.'''
-        if (other in self.get_friends()): # type: ignore
+        if (other in self.get_friends()): 
             return
         
         Friends.objects.create(profile1=self, profile2=other)
 
+    def get_newsfeed(self):
+        '''Return all of the status messages from this profile and friends, newest first.'''
+        all_friends = self.get_friends() 
+        newsfeed = self.get_status_messages()
+        for f in all_friends:
+            newsfeed |= f.get_status_messages()
+        
+        return newsfeed.order_by('-timestamp')
 
 class StatusMessage(models.Model):    
     profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
@@ -68,8 +76,4 @@ class Friends(models.Model):
         '''Return a string representation of this Profile object.'''
         return f'{self.profile1.first_name} {self.profile1.last_name} & {self.profile2.first_name} {self.profile2.last_name}'
 
-    def get_status_messages(self):
-        '''Return all of the status messages for this profile, newest first.'''
-        sms = StatusMessage.objects.filter(profile=self.profile1) | StatusMessage.objects.filter(profile=self.profile2)
-        return sms.order_by('-timestamp')
     

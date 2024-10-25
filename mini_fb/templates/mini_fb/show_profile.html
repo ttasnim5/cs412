@@ -7,8 +7,8 @@
             <img src="{{profile.image_url}}" alt="Profile Image" >
             
             <div class="button-container">
-                <div class="button"><a href="{% url 'update_profile' profile.pk %}">Update Profile</a></div>
-                <div class="button"><a href="{% url 'friend_suggestions' profile.pk %}">Make More Friends</a></div>
+                <a href="{% url 'update_profile' profile.pk %}"><div class="button">Update Profile</div></a>
+                <a href="{% url 'friend_suggestions' profile.pk %}"><div class="button">Make More Friends</div></a>
             </div>
 
             <div class="create-message">
@@ -27,8 +27,9 @@
                 <h3>from {{profile.city}}</h3>
                 <h3>{{profile.email}}</h3>
             </div>
+            <a href="{% url 'news_feed' profile.pk %}"><div class="button">See NewsFeed</div></a>
             <div>
-                <h2>Status Messages</h2>
+                <h2>{{profile.first_name}}'s Status Messages</h2>
                 {% for m in profile.get_status_messages %}
                     <div class="status-message">
                         <h3>{{ m.message }}</h3>
@@ -37,8 +38,8 @@
                         {% endfor %}
                         <p>{{ m.timestamp }}</p>
                         <div class="button-container">
-                            <div class="button"><a href="{% url 'delete_status' m.pk %}">Delete Message</a></div>
-                            <div class="button"><a href="{% url 'update_status' m.pk %}">Update Message</a></div>
+                            <a href="{% url 'delete_status' m.pk %}"><div class="button">Delete Message</div></a>
+                            <a href="{% url 'update_status' m.pk %}"><div class="button">Update Message</div></a>
                         </div>
                     </div>
                 {% endfor %}
@@ -46,14 +47,17 @@
         </div>
     </div>
     
-    <h2>Friends</h2>
-    <div class="friend-container">
-        
-        {% for f in profile.get_friends %}
-            <div class="status-message">
-                <a href="{% url 'show_profile' f.pk %}"><h3>{{ f }}</h3></a>
-            </div>
-        {% endfor %}
+    <div class="friends-section">
+        <h2>Friends</h2>
+        <div class="friend-container">
+            {% for f in profile.get_friends %}
+            <a href="{% url 'show_profile' f.pk %}">
+                <div class="friend-card">
+                    <h3>{{ f }}</h3>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
 </main>
 
