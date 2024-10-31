@@ -1,7 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User ## NEW
 
 class Profile(models.Model):
     '''Attributes of a user profile'''
+    # each profile will be associated with a User
+    # can do cascade, default=1
+    user = models.ForeignKey(User, on_delete=models.CASCADE) ## NEW
+
     first_name = models.TextField(blank=False)
     last_name = models.TextField(blank=False)
     city = models.TextField(blank=False)

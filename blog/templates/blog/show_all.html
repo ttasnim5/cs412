@@ -10,7 +10,7 @@
     <article> <!-- was <div> -->
         
         <a href="{% url 'article' a.pk %}"> <!-- use object instance.pk -->
-            <img src="{{a.image_file.url}}" alt="{{a.image_url}}">
+            <img src="{{a.image_file.url}}" width="300" height="300" alt="{{a.image_url}}">
         </a>
 
         <div> <!-- added this! -->

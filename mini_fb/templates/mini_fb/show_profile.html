@@ -5,28 +5,41 @@
     <div class="profile-container">
         <div class="image-container">
             <img src="{{profile.image_url}}" alt="Profile Image" >
-            
-            <div class="button-container">
-                <a href="{% url 'update_profile' profile.pk %}"><div class="button">Update Profile</div></a>
-                <a href="{% url 'friend_suggestions' profile.pk %}"><div class="button">Make More Friends</div></a>
-            </div>
 
-            <div class="create-message">
-                <h2>New Status Message:</h2>
-                <form method="post" action="{% url 'show_profile' profile.pk %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="file" name = "files" multiple />
-                    <input type="submit" value="Post Message" class="button">
-                </form>
-            </div>
-        </div>
-        <div class="right-design-block">
-            <div class="profile-info">
+            {% if not is_own_profile %}
                 <h2>{{profile.first_name}} {{profile.last_name}}</h2>
                 <h3>from {{profile.city}}</h3>
                 <h3>{{profile.email}}</h3>
-            </div>
+            {% endif %}
+
+            {% if is_own_profile %}
+                <div class="button-container">
+                    <a href="{% url 'update_profile' profile.pk %}"><div class="button">Update Profile</div></a>
+                    <a href="{% url 'friend_suggestions' profile.pk %}"><div class="button">Make More Friends</div></a>
+                </div>
+            
+
+                <div class="create-message">
+                    <h2>New Status Message:</h2>
+                    <form method="post" action="{% url 'show_profile' profile.pk %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="file" name = "files" multiple />
+                        <input type="submit" value="Post Message" class="button">
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="right-design-block">
+            {% if is_own_profile %}
+                <div class="profile-info">
+                    <h2>{{profile.first_name}} {{profile.last_name}}</h2>
+                    <h3>from {{profile.city}}</h3>
+                    <h3>{{profile.email}}</h3>
+                </div>
+            {% endif %}
+
             <a href="{% url 'news_feed' profile.pk %}"><div class="button">See NewsFeed</div></a>
             <div>
                 <h2>{{profile.first_name}}'s Status Messages</h2>
@@ -37,10 +50,13 @@
                             <img src='{{img.image_file.url}}' alt='{{img.image_file.url}}' class="image-container">
                         {% endfor %}
                         <p>{{ m.timestamp }}</p>
-                        <div class="button-container">
-                            <a href="{% url 'delete_status' m.pk %}"><div class="button">Delete Message</div></a>
-                            <a href="{% url 'update_status' m.pk %}"><div class="button">Update Message</div></a>
-                        </div>
+
+                        {% if is_own_profile %}
+                            <div class="button-container">
+                                <a href="{% url 'delete_status' m.pk %}"><div class="button">Delete Message</div></a>
+                                <a href="{% url 'update_status' m.pk %}"><div class="button">Update Message</div></a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

@@ -1,28 +1,46 @@
-<!-- blog/templates/blog/base.html 
- This is base page from which all other pages will inherit.
- Put common code here, specific code in separate pages
- -->
- {% load static %}
+## edit blog/templates/blog/base.html
+## update URLs in <nav> based on logged in status:
+<!-- blog/templates/blog/base.html -->
+{% load static %}
 <html>
     <head>
-        <title>Our Blog</title>
+        <title>Blog</title>
         <link rel="stylesheet" href="{% static 'styles-blog.css' %}">
     </head>
     <body>
+        <header>
+            <h1>Blog</h1>
+            <nav>
+                <ul>
+                    <!-- URLs that do not depend on authentication status -->
+                    <li><a href="{% url 'show_all' %}">Show All</a></li>
+                    <li><a href="{% url 'random' %}">Random</a></li>
+                    
+                    <!-- URLs that depend on authentication status -->
+                    {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'create_article' %}">Create Article</a></li>
 
-    <nav>
-        <ul>
-            <!-- use the scriptlet URL function to look up a URL by name -->
-            <li><a href="{% url 'show_all' %}">Show All</a></li>
-            <li><a href="{% url 'random' %}">Random</a></li>
-            <li><a href="{% url 'create_article' %}">Create Article </a></li>
-        </ul>
-    </nav>
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <input type="submit" value="Logout">
+                    </form>
 
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Log in</a></li>
+                    {% endif %}
+                </ul>
+                
+                <!-- show who's logged in -->
+                {% if request.user.is_authenticated %}
+                Logged in user: {{ request.user }}.
+                {% else %}
+                Not logged in.
+                {% endif %}
+            </nav>
+        </header>
+    
     {% block content %}
-    <!-- put the interesting (specific stuff) here -->
-    {% endblock %}
-
-   
+    {% endblock %}    
+  
     </body>
 </html>

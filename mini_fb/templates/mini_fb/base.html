@@ -10,7 +10,25 @@
             <nav>
                 <ul>
                     <li><a href="{% url 'show_all_profiles' %}"><h1>All Profiles</h1></a></li>
-                    <li><a href="{% url 'create_new_profile' %}"><h1>Create New Profile</h1></a></li>
+
+                    <!-- URLs that depend on authentication status -->
+                    {% if request.user.is_authenticated %}
+                        <li><a href="{% url 'register' %}"><h1>Create New Account</h1></a></li>
+    
+                    {% else %}
+                        <li><a href="{% url 'login' %}"><h1>Log in</h1></a></li>
+                        {% endif %}
+                        <li class="login-status"><!-- show who's logged in -->
+                            {% if request.user.is_authenticated %}
+                                <h3>Logged in user: {{ request.user }}.</h3>
+                                <form method="POST" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Logout">
+                                </form>
+                            {% else %}
+                                <h3>Not logged in.</h3>
+                            {% endif %}
+                        </li>
                 </ul>
             </nav>
         </header>

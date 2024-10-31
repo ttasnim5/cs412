@@ -2,19 +2,23 @@
 # Define data models (objects) for use in the blog application
 from django.db import models
 from django.urls import reverse
-
+from django.contrib.auth.models import User ## NEW
 
 # Create your models here.
 class Article(models.Model):
     '''Encapsulate the data for a blog Article by some author.'''
+
+    # each Article will be associated with a User
+    # can do cascade, default=1
+    user = models.ForeignKey(User, on_delete=models.CASCADE) ## NEW
 
     # data attributes:
     title = models.TextField(blank=False)
     author = models.TextField(blank=False)
     text = models.TextField(blank=False)
     published = models.DateTimeField(auto_now=True)
-    # image_url = models.URLField(blank=True) ## new field
-    image_file = models.ImageField(blank=True)
+    # image_url = models.URLField(blank=True) 
+    image_file = models.ImageField(blank=True) 
 
     def __str__(self):
         '''Return a string representation of this Article.'''
@@ -29,8 +33,11 @@ class Article(models.Model):
         return comments
 
     def get_absolute_url(self):
-        '''Return the URL to display this Article.'''
-        return reverse('article', kwargs={'pk':self.pk})
+        '''
+        Return the URL to view one instance of this object.
+        '''
+        # self.pk is the primary key for an object instance
+        return reverse('article', kwargs={'pk': self.pk})
 
 
 class Comment(models.Model):

@@ -272,6 +272,9 @@ h3 {
     font-size: 1.25rem;
 }
 
+.login-status {
+    margin-left: auto; /* Pushes the li to the right margin */
+}
 
 header {
     background-color: #544036;
@@ -299,5 +302,5 @@ nav ul li a {
 
 nav ul li a:hover {
     background-color: #fdfaf2;
-    color: black;
+    color: #544036;
 }
