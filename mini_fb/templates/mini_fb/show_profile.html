@@ -14,8 +14,8 @@
 
             {% if is_own_profile %}
                 <div class="button-container">
-                    <a href="{% url 'update_profile' profile.pk %}"><div class="button">Update Profile</div></a>
-                    <a href="{% url 'friend_suggestions' profile.pk %}"><div class="button">Make More Friends</div></a>
+                    <a href="{% url 'update_profile' %}"><div class="button">Update Profile</div></a>
+                    <a href="{% url 'friend_suggestions' %}"><div class="button">Make More Friends</div></a>
                 </div>
             
 
@@ -38,9 +38,9 @@
                     <h3>from {{profile.city}}</h3>
                     <h3>{{profile.email}}</h3>
                 </div>
+                <a href="{% url 'news_feed' %}"><div class="button">See NewsFeed</div></a>
             {% endif %}
 
-            <a href="{% url 'news_feed' profile.pk %}"><div class="button">See NewsFeed</div></a>
             <div>
                 <h2>{{profile.first_name}}'s Status Messages</h2>
                 {% for m in profile.get_status_messages %}

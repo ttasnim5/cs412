@@ -3,10 +3,8 @@ from django.contrib.auth.models import User ## NEW
 
 class Profile(models.Model):
     '''Attributes of a user profile'''
-    # each profile will be associated with a User
-    # can do cascade, default=1
+    # each profile will be associated with a User, can do cascade, default=1
     user = models.ForeignKey(User, on_delete=models.CASCADE) ## NEW
-
     first_name = models.TextField(blank=False)
     last_name = models.TextField(blank=False)
     city = models.TextField(blank=False)
@@ -22,7 +20,7 @@ class Profile(models.Model):
         return self.statusmessage_set.order_by('-timestamp')
     
     def get_friends(self):
-        '''Return all friends of profile1 // needs to return a LIST of friend profiles'''
+        '''Returns a list of all friends of profile1'''
         # all friends where profile1 is either profile1 or profile2 in the Friends model
         friends_as_profile1 = Friends.objects.filter(profile1=self)
         friends_as_profile2 = Friends.objects.filter(profile2=self)
@@ -48,6 +46,7 @@ class Profile(models.Model):
         return newsfeed.order_by('-timestamp')
 
 class StatusMessage(models.Model):    
+    '''Attributes of a status message'''
     profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
     message = models.TextField(blank=False)
     timestamp = models.DateTimeField(auto_now=True)
@@ -62,6 +61,7 @@ class StatusMessage(models.Model):
 
 
 class Image(models.Model):    
+    '''Attributes of an Image (for status messages)'''
     message = models.ForeignKey("StatusMessage", on_delete=models.CASCADE)  # Linking image to StatusMessage
     image_file = models.ImageField(blank=False)  # actual image, not url
     timestamp = models.DateTimeField(auto_now=True)  
@@ -72,7 +72,7 @@ class Image(models.Model):
 
 
 class Friends(models.Model):
-    '''Attributes of a user profile'''
+    '''Attributes of a Friend to a user'''
     profile1 = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="friends_profile1")
     profile2 = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="friends_profile2")
     timestamp = models.DateTimeField(auto_now=True)
