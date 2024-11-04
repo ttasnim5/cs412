@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.ShowAllView.as_view(), name="show_all_profiles"),
     path('show_all', views.ShowAllView.as_view(), name="show_all_profiles"),
     path('profile/<int:pk>', views.ShowProfilePageView.as_view(), name='show_profile'),
-    path('create_new_profile/<int:user_id>/', views.CreateProfilePageView.as_view(), name='create_new_profile'),    
+    path('create_profile/<int:user_id>/', views.CreateProfilePageView.as_view(), name='create_profile'),    
 
     path('profile/update', views.UpdateProfileView.as_view(), name='update_profile'),
     path('status/<int:pk>/delete', views.DeleteStatusMessageView.as_view(), name='delete_status'),
