@@ -1,0 +1,17 @@
+{% extends 'voter_analytics/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <p>
+            {{parties_graph|safe}}
+        </p>
+        <p>
+            {{ birth_year_distribution_graph|safe }}
+        </p>
+        <p>
+            {{ elections_graph|safe }}
+        </p>
+    </div>
+</div>
+{% endblock %}

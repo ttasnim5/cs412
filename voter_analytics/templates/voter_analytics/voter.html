@@ -1,0 +1,54 @@
+{% extends 'voter_analytics/base.html' %}
+{% block content %}
+<div class="container">
+    <h1>Voter {{v.first_name}} {{v.last_name}}</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Party Affiliation</th>
+            <th>Date of Birth</th>
+            <th>Date of Registration</th>
+            <th>Precinct</th>
+        </tr>
+        
+        <tr>
+            <td>{{v.last_name}}, {{v.first_name}}</td>
+            <td>{{v.street_num}} {{v.street_name}} {{v.street_num}} {{v.apt_num}} {{v.zip_code}}</td>
+            <td>{{v.party}}</td>                
+            <td>{{v.date_of_birth}}</td>
+            <td>{{v.date_of_reg}}</td>  
+            <td>{{v.precinct_num}}</td> 
+        </tr>
+    </table>
+
+    <table>
+        <h3>Voted in recent elections...</h3>
+        <tr>
+            <th>State Election 2020</th>
+            <th>Town Election 2021</th>
+            <th>Primary 2021</th>
+            <th>General Election 2022</th>
+            <th>Town Election 2023</th>
+            <th>Overall Voter Score</th>
+        </tr>
+        <tr>
+            <td>{% if v.v20state %}Yes{% else %}No{% endif %}</td>       
+            <td>{% if v.v21town %}Yes{% else %}No{% endif %}</td>
+            <td>{% if v.v21primary %}Yes{% else %}No{% endif %}</td>  
+            <td>{% if v.v22general %}Yes{% else %}No{% endif %}</td> 
+            <td>{% if v.v23town %}Yes{% else %}No{% endif %}</td>
+            <td>{{ v.voterscore }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- <div class="container">
+    <div class="row">
+        <p>
+            {{graph_div_splits|safe}}
+        </p>
+        
+    </div>
+</div> -->
+{% endblock %}

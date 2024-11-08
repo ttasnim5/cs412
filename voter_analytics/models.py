@@ -29,6 +29,16 @@ class Voter(models.Model):
         '''Return a string representation of this model instance.'''
         return f'{self.first_name} {self.last_name}, ({self.street_num} {self.street_name}) {self.zip_code}, score: {self.voterscore}'
     
+    def save(self, *args, **kwargs):
+        # list of fields to apply title case
+        fields_to_titlecase = ['first_name', 'last_name', 'street_name', 'apt_num']
+        
+        for field in fields_to_titlecase:
+            value = getattr(self, field, None)
+            if value:
+                setattr(self, field, value.title())
+        super().save(*args, **kwargs)
+    
 def load_data():
     '''Function to load data records from CSV file into Django model instances.'''
     # delete existing records to prevent duplicates:
@@ -38,7 +48,7 @@ def load_data():
     f = open(filename)
     f.readline() # discard headers
     for line in f:
-        fields = line.split(',')
+        fields = line.split(',').strip()
         
         data = {
             'voter_id': fields[0],
