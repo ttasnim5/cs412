@@ -1,0 +1,116 @@
+nav ul {
+    list-style-type: none; 
+    display: flex;
+    gap: 1rem;
+    padding: 0;
+    margin: .5rem;
+}
+nav ul li {
+    display: inline-flex; 
+    align-items: center;  
+    justify-content: center;
+    background-color: antiquewhite;
+    padding: 1rem; 
+    cursor: pointer;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1rem;
+    transition: background-color 0.3s ease;
+    margin: 0 0.5rem; 
+}
+nav ul li a {
+    color:#035f0c;
+}
+nav ul li:hover {
+    background-color: #08aa9a;
+}
+nav ul li:hover a {
+    color: white;
+}
+
+.title {
+    border-bottom: 1px solid #7f910a;
+    line-height: 1rem;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 1.75rem;
+    color:#142d78;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color:#393c3a;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+p {
+    font-size: 1rem;
+    color:#361700;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+tr {transition: background-color 0.3s ease;}
+tr:nth-child(even){background-color: #f2f2f2;}
+tr:hover {background-color: #ddd;}
+
+th {
+    padding: .5rem;
+    text-align: center;
+    justify-content: center;
+    background-color: #c3eede;
+}
+
+td {
+    padding: .5rem;
+}
+
+span, input[type="submit"], button[type="submit"] {
+    text-align: center;
+    align-items: center;
+    margin: .5rem; 
+    padding: 0.75rem; 
+    background-color:#9EDF9C;
+    border: none; 
+    cursor: pointer;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: black;
+    font-size: 1rem;;
+    transition: background-color 0.3s ease;
+}
+
+span:hover, input[type="submit"]:hover, button[type="submit"]:hover {
+    background-color: #62825D; 
+    color: white;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="checkbox"],
+select {
+    padding: .25rem;
+    font-size: .9rem;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.name {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.name:hover {
+    background-color: #e5fff2;
+}

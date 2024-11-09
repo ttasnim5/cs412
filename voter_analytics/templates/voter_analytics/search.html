@@ -2,12 +2,12 @@
 <form action="{% url 'voters_list' %}">
     <table>
         <tr>
-            <th>First Name:</th>
-            <th>Last Name:</th>
-            <th>Min DoB:</th>
-            <th>Max DoB:</th>
-            <th>Party:</th>
-            <th>Voter Score:</th>
+            <th><p>First Name:<p></th>
+            <th><p>Last Name:</p></th>
+            <th><p>Min DoB:</p></th>
+            <th><p>Max DoB:</p></th>
+            <th><p>Party:<p></th>
+            <th><p>Voter Score:</p></th>
         </tr>
         <tr>
             <td><input type="text" name="first_name"></td>
@@ -17,21 +17,28 @@
             <td>
                 <select name="party">
                     <option value="">Select Party</option>
-                    <option value="U ">Undecided</option>
-                    <option value="D ">Democrat</option>
-                    <option value="L ">L</option>
-                    <option value="R ">Republican</option>
+                    <option value="U "><p>Unenrolled (U)</p></option>
+                    <option value="D "><p>Democratic (D)</p></option>
+                    <option value="R "><p>Republican (R)</p></option>
+                    <option value="CC "><p>Constitution Party (CC)</p></option>
+                    <option value="L "><p>Libertarian (L)</p></option>
+                    <option value="T "><p>Tea Party (T)</p></option>
+                    <option value="O "><p>Other (O)</p></option>
+                    <option value="G "><p>Green (G)</p></option>
+                    <option value="J "><p>Independent (J)</p></option>
+                    <option value="Q "><p>Reform Party (Q)</p></option>
+                    <option value="FF "><p>Freedom Party (FF)</p></option>
                 </select>
             </td>
             <td>
                 <select name="voterscore">
                     <option value="">Select Score</option>
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                    <option value="0"><p>0</p></option>
+                    <option value="1"><p>1</p></option>
+                    <option value="2"><p>2</p></option>
+                    <option value="3"><p>3</p></option>
+                    <option value="4"><p>4</p></option>
+                    <option value="5"><p>5</p></option>
                 </select>
             </td>
         </tr>
@@ -40,18 +47,18 @@
     <table>
         <h3>Election Participation:</h3>
         <tr>
-            <th>State Election 2020</th>
-            <th>Town Election 2021</th>
-            <th>Primary 2021</th>
-            <th>General Election 2022</th>
-            <th>Town Election 2023</th>
+            <th><p>State Election 2020</p></th>
+            <th><p>Town Election 2021</p></th>
+            <th><p>Primary 2021</p></th>
+            <th><p>General Election 2022</p></th>
+            <th><p>Town Election 2023</p></th>
         </tr>
         <tr>
-            <td><input type="checkbox" name="v20state" value="True"> Voted</td>
-            <td><input type="checkbox" name="v21town" value="True"> Voted</td>
-            <td><input type="checkbox" name="v21primary" value="True"> Voted</td>
-            <td><input type="checkbox" name="v22general" value="True"> Voted</td>
-            <td><input type="checkbox" name="v23town" value="True"> Voted</td>
+            <td><input type="checkbox" name="v20state" value="True"><p>Voted</p></td>
+            <td><input type="checkbox" name="v20state" value="True"><p>Voted</p></td>
+            <td><input type="checkbox" name="v21town" value="True"><p>Voted</p></td>
+            <td><input type="checkbox" name="v21primary" value="True"><p>Voted</p></td>
+            <td><input type="checkbox" name="v22general" value="True"><p>Voted</p></td>
         </tr>
     </table>
 

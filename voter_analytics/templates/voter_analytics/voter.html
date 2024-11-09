@@ -1,54 +1,50 @@
 {% extends 'voter_analytics/base.html' %}
 {% block content %}
 <div class="container">
-    <h1>Voter {{v.first_name}} {{v.last_name}}</h1>
+    <h2>Voter {{v.first_name}} {{v.last_name}}</h2>
     <table>
         <tr>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Party Affiliation</th>
-            <th>Date of Birth</th>
-            <th>Date of Registration</th>
-            <th>Precinct</th>
+            <th><h3>Name</h3></th>
+            <th><h3>Address</h3></th>
+            <th><h3>Party Affiliation</h3></th>
+            <th><h3>Date of Birth</h3></th>
+            <th><h3>Date of Registration</h3></th>
+            <th><h3>Precinct</h3></th>
+            <th><h3>Google Maps</h3></th>
         </tr>
         
         <tr>
-            <td>{{v.last_name}}, {{v.first_name}}</td>
-            <td>{{v.street_num}} {{v.street_name}} {{v.street_num}} {{v.apt_num}} {{v.zip_code}}</td>
-            <td>{{v.party}}</td>                
-            <td>{{v.date_of_birth}}</td>
-            <td>{{v.date_of_reg}}</td>  
-            <td>{{v.precinct_num}}</td> 
+            <td><p>{{v.last_name}}, {{v.first_name}}</p></td>
+            <td><p>{{v.street_num}} {{v.street_name}} {{v.street_num}} {{v.apt_num}} {{v.zip_code}}</p></td>
+            <td><p>{{v.party}}</p></td>                
+            <td><p>{{v.date_of_birth}}</p></td>
+            <td><p>{{v.date_of_reg}}</p></td>  
+            <td><p>{{v.precinct_num}}</p></td> 
+            <td class="name"><a href="https://www.google.com/maps/search/?api=1&query={{ v.street_num }}+{{ v.street_name }},+newton,+massachusetts+{{ v.zip_code }}" target="_blank">
+                <p>VIEW</p>
+            </a></td>
         </tr>
     </table>
 
     <table>
-        <h3>Voted in recent elections...</h3>
+        <h2>Voted in recent elections...</h2>
         <tr>
-            <th>State Election 2020</th>
-            <th>Town Election 2021</th>
-            <th>Primary 2021</th>
-            <th>General Election 2022</th>
-            <th>Town Election 2023</th>
-            <th>Overall Voter Score</th>
+            <th><h3>State Election 2020</h3></th>
+            <th><h3>Town Election 2021</h3></th>
+            <th><h3>Primary 2021</h3></th>
+            <th><h3>General Election 2022</h3></th>
+            <th><h3>Town Election 2023</h3></th>
+            <th><h3>Overall Voter Score</h3></th>
         </tr>
         <tr>
-            <td>{% if v.v20state %}Yes{% else %}No{% endif %}</td>       
-            <td>{% if v.v21town %}Yes{% else %}No{% endif %}</td>
-            <td>{% if v.v21primary %}Yes{% else %}No{% endif %}</td>  
-            <td>{% if v.v22general %}Yes{% else %}No{% endif %}</td> 
-            <td>{% if v.v23town %}Yes{% else %}No{% endif %}</td>
-            <td>{{ v.voterscore }}</td>
+            <td><p>{% if v.v20state %}Yes{% else %}No{% endif %}</p></td>       
+            <td><p>{% if v.v21town %}Yes{% else %}No{% endif %}</p></td>
+            <td><p>{% if v.v21primary %}Yes{% else %}No{% endif %}</p></td>  
+            <td><p>{% if v.v22general %}Yes{% else %}No{% endif %}</p></td> 
+            <td><p>{% if v.v23town %}Yes{% else %}No{% endif %}</p></td>
+            <td><p>{{ v.voterscore }}<p></td>
         </tr>
     </table>
 </div>
 
-<!-- <div class="container">
-    <div class="row">
-        <p>
-            {{graph_div_splits|safe}}
-        </p>
-        
-    </div>
-</div> -->
 {% endblock %}

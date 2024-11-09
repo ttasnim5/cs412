@@ -1,51 +1,62 @@
 {% extends 'voter_analytics/base.html' %}
 <h1>Showing all Results</h1>
 {% block content %}
-<div class="container">
-    <div class="row">
+<div>
+    <div>
         {% include "voter_analytics/search.html" %}    
     </div>
 
     <h1>Voters</h1>
-    <div class="row">
+    <p> Entries shown: {{ voters|length }}</p>
+    <div>
         <table>
             <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Party Affiliation</th>
-                <th>Voter Score</th>
+                <th><h3>Name</h3></th>
+                <th><h3>Address</h3></th>
+                <th><h3>Date of Birth</h3></th>
+                <th><h3>Party Affiliation</h3></th>
+                <th><h3>Voter Score</h3></th>
             </tr>
     
             {% for v in voters %}
             <tr>
-                <td><a href="{% url 'voter' v.pk %}">{{v.last_name}}, {{v.first_name}}</a></td>
+                <td class="name"><a href="{% url 'voter' v.pk %}"><p>{{v.last_name}}, {{v.first_name}}</p></a></td>
 
                 {% if v.apt_num != "" %}
-                    <td>{{v.street_num}} {{v.street_name}}, APT {{v.apt_num}}, {{v.zip_code}}</td>
+                    <td><p>{{v.street_num}} {{v.street_name}}, APT {{v.apt_num}}, {{v.zip_code}}</p></td>
                 {% else %}
-                    <td>{{v.street_num}} {{v.street_name}}, {{v.zip_code}}</td>
+                    <td><p>{{v.street_num}} {{v.street_name}}, {{v.zip_code}}</p></td>
                 {% endif %}
-                <td>{{v.party}}</td>                
-                <td>{{v.voterscore}}</td>
+                <td><p>{{v.date_of_birth}}</p></td>
+                <td><p>{{v.party}}</p></td>                
+                <td><p>{{v.voterscore}}</p></td>
             </tr>
             {% endfor %}
         </table>
     </div>
 
-    <div class="row">
+    <div>
         {% if is_paginated %}
         <ul class="pagination">
             {% if page_obj.has_previous %}
                 <li>
-                    <span><a href="?page={{ page_obj.previous_page_number }}">Previous</a></span>
+                    <a href="?page={{ page_obj.previous_page_number }}">
+                        <div class="button">
+                            <span><h3>Previous</h3></span>
+                        </div>
+                    </a>
                 </li>
             {% endif %}
-                <li class="">
-                    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+                <li>
+                    <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</p>
                 </li>
             {% if page_obj.has_next %}
                 <li>
-                    <span><a href="?page={{ page_obj.next_page_number }}">Next</a></span>
+                    <a href="?page={{ page_obj.next_page_number }}">
+                        <div>
+                            <span>Next</span>
+                        </div>
+                    </a>
                 </li>
             {% endif %}
             </ul>

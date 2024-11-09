@@ -57,7 +57,7 @@ class VotersListView(ListView):
             qs = qs.filter(v22general=True)
         if v23town:
             qs = qs.filter(v23town=True)
-
+        
         return qs
 
     
@@ -81,12 +81,17 @@ class VoterGraphsView(ListView):
         qs = super().get_queryset()
 
         # pie chart of parties
-        x= ['U', 'D', 'R', 'L']
-        y = [len(qs.filter(party='U ')), len(qs.filter(party='D ')), len(qs.filter(party='R ')), len(qs.filter(party='L '))]
+        x= ['U', 'D', 'R', 'CC', 'L', 'T', 'O', 'G', 'J', 'Q', 'FF']
+        y = [len(qs.filter(party='U ')), len(qs.filter(party='D ')), len(qs.filter(party='R ')), 
+             len(qs.filter(party='CC ')), len(qs.filter(party='L ')), len(qs.filter(party='T ')),
+             len(qs.filter(party='O ')), len(qs.filter(party='G ')), len(qs.filter(party='J ')),
+             len(qs.filter(party='Q ')), len(qs.filter(party='FF ')),
+            ]
         
         fig = go.Figure(data=[go.Pie(labels=x, values=y)])
-        fig.update_layout(title_text="Party Affiliations")
-
+        fig.update_layout(title_text="Party Affiliations", 
+                          colorway=["#D8DBBD", "#003161", "#AF1740", "#FFF4B7"])
+                        #   colorway=["#FF8000", "#4C1F7A", "#219B9D", "#EEEEEE"])
         # render
         parties_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
         context['parties_graph'] = parties_graph
@@ -100,9 +105,11 @@ class VoterGraphsView(ListView):
         y = [birth_year_counts[year] for year in x]  # counts for each year in sorted order
 
         fig = go.Figure(data=[go.Bar(x=x, y=y)])
-        fig.update_layout(title_text="Distribution of Voter Birth Years", 
+        fig.update_layout(title_text="Distribution of Voters' Birth Years", 
                           xaxis_title="Year of Birth", 
-                          yaxis_title="Number of Voters")
+                          yaxis_title="Number of Voters",
+                          colorway=["#219B9D"], 
+                          plot_bgcolor="#f2f2f2")
 
         # render
         birth_year_distribution_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
@@ -117,10 +124,12 @@ class VoterGraphsView(ListView):
             'Town Election 2023': qs.filter(v23town=True).count(),
         }
 
-        fig = go.Figure(data=[go.Bar(x=list(counts.keys()), y=list(counts.values()))])
+        fig = go.Figure(data=[go.Bar(x=list(counts.keys()), y=list(counts.values()),
+                                     marker_color=['#88C273', '#7776B3', '#D4BDAC', '#536493', '#3C552D'])])
         fig.update_layout(title_text="Recent Election Participation", 
                           xaxis_title="Election", 
-                          yaxis_title="Number of Voters")
+                          yaxis_title="Number of Voters",
+                          plot_bgcolor="#f2f2f2")
 
         # render
         elections_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")

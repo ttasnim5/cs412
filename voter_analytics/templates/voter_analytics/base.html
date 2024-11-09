@@ -2,16 +2,18 @@
 <html>
     <head>
         <title>Voter Analytics</title>
-        <link rel="stylesheet" href="{% static 'stylesheet.css' %}">
+        <link rel="stylesheet" href="{% static 'analytics.css' %}">
     </head>
     <body>
-        <header>
-            <h1>Voter Analytics</h1>
+        <header>        
             <nav>
+                <div class="title">
                 <ul>
+                    <h1>Voter Analytics</h1>
                     <li><a href="{% url 'home' %}">Home</a></li>
                     <li><a href="{% url 'graphs' %}">Voter Graphs</a></li>
                 </ul>
+                </div>
             </nav>
         </header>
     
