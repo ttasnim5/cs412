@@ -1,0 +1,43 @@
+<h3>Filter Products</h3>
+<form action="{% url 'home' %}">
+    <table>
+        <tr>
+            <th><p>Product Name:<p></th>
+            <th><p>Brand:</p></th>
+            <th><p>Categories:</p></th>
+            <th><p>Origins:</p></th>
+            <th><p>Nutrition Grade:<p></th>
+            <th><p>Ingredients:</p></th>
+            <th><p>Energy (k-cal per 100g):</p></th>
+            <th><p>Proteins (per 100g):</p></th>
+            <th><p>Carbohydrates (per 100g):</p></th>
+            <th><p>Fats (per 100g):</p></th>
+            <th><p>Carbon Footprint (per 100g):</p></th>
+        </tr>
+        <tr>
+            <td><input type="text" name="product_name"></td>
+            <td><input type="text" name="brands"></td>
+            <td><input type="text" name="categories"></td>
+            <td><input type="text" name="origins"></td>
+            <td>
+                <select name="nutrition_grade_fr">
+                    <option value="">Select Party</option>
+                    <option value="A"><p>A</p></option>
+                    <option value="B"><p>B</p></option>
+                    <option value="C"><p>C</p></option>
+                    <option value="D"><p>D</p></option>
+                    <option value="E"><p>E</p></option>
+                    <option value="F"><p>F</p></option>
+                </select>
+            </td>
+            <td><input type="text" name="ingredients"></td>
+            <td><input type="number" name="energy_kcal_100g"></td>
+            <td><input type="number" name="proteins_100g"></td>
+            <td><input type="number" name="carbohydrates_100g"></td>
+            <td><input type="number" name="fat_100g"></td>
+            <td><input type="number" name="carbon_footprint_100g"></td>
+        </tr>
+    </table>
+
+    <button type="submit">Search</button>
+</form>
