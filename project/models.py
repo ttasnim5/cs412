@@ -2,8 +2,20 @@ from django.db import models
 import requests
 
 class Cause(models.Model):
-    cause_title = models.TextField()
-    social_cause_categories = models.TextField()
+    title = models.CharField(max_length=255)  # Specific cause title
+    category = models.CharField(
+        max_length=50,
+        choices=[
+            ("Environmental Impact", "Environmental Impact"),
+            ("Labor Practices", "Labor Practices"),
+            ("Animal Welfare", "Animal Welfare"),
+            ("Health & Nutrition", "Health & Nutrition"),
+            ("Ethical Marketing", "Ethical Marketing"),
+            ("Community Support", "Community Support"),
+        ],
+    )
+    description = models.TextField(null=True, blank=True)  # Optional for details about the cause
+
 
     def __str__(self):
         '''Return a string representation of this model instance.'''
@@ -35,33 +47,36 @@ class Figures(models.Model):
     # image_url or imageField
 
 class Product(models.Model):
-    product_name = models.TextField()
-    code = models.TextField()
-    categories = models.TextField(null=True, blank=True)
-    categories_tags = models.TextField(null=True, blank=True)
-    brands = models.TextField(null=True, blank=True)
-    brands_tags = models.TextField(null=True, blank=True)
-    origins = models.TextField(null=True, blank=True)
-    manufacturing_places = models.TextField(null=True, blank=True)
-    countries = models.TextField(null=True, blank=True)
-    nutrition_grade_fr = models.CharField(max_length=3, null=True, blank=True)
-    main_category = models.TextField(null=True, blank=True)
-    ingredients_text = models.TextField(null=True, blank=True)
-    traces = models.TextField(null=True, blank=True)
-    energy_kcal_100g = models.IntegerField(null=True, blank=True)
-    proteins_100g = models.IntegerField(null=True, blank=True)
-    carbohydrates_100g = models.IntegerField(null=True, blank=True)
-    fat_100g = models.IntegerField(null=True, blank=True)
-    carbon_footprint_100g = models.IntegerField(null=True, blank=True)
+    product_name = models.TextField(default="N/A")
+    code = models.TextField(default="N/A")
+    categories = models.TextField(null=True, blank=True, default="N/A")
+    categories_tags = models.TextField(null=True, blank=True, default="N/A")
+    brands = models.TextField(null=True, blank=True, default="N/A")
+    brands_tags = models.TextField(null=True, blank=True, default="N/A")
+    origins = models.TextField(null=True, blank=True, default="N/A")
+    manufacturing_places = models.TextField(null=True, blank=True, default="N/A")
+    countries = models.TextField(null=True, blank=True, default="N/A")
+    nutrition_grade_fr = models.CharField(max_length=3, null=True, blank=True, default="N/A")
+    main_category = models.TextField(null=True, blank=True, default="N/A")
+    ingredients_text = models.TextField(null=True, blank=True, default="N/A")
+    traces = models.TextField(null=True, blank=True, default="N/A")
+    energy_kcal_100g = models.IntegerField(null=True, blank=True, default=0)
+    proteins_100g = models.IntegerField(null=True, blank=True, default=0)
+    carbohydrates_100g = models.IntegerField(null=True, blank=True, default=0)
+    fat_100g = models.IntegerField(null=True, blank=True, default=0)
+    carbon_footprint_100g = models.IntegerField(null=True, blank=True, default=0)
 
     def __str__(self):
         '''Return a string representation of this Product instance.'''
         return f'{self.product_name} by {self.brands}'
 
+###################################################################################
 def get_data():
     num_products = 15000
     page_size = 1000
     base_url = "https://world.openfoodfacts.org/cgi/search.pl"
+
+    Product.objects.all().delete()
 
     for page in range(1, num_products // page_size + 1):
         response = requests.get(base_url, params={
@@ -95,7 +110,7 @@ def get_data():
                 'origins': product.get('origins', '').replace('\n', ' ').replace('\r', ' '),
                 'manufacturing_places': product.get('manufacturing_places', '').replace('\n', ' ').replace('\r', ' '),
                 'countries': product.get('countries', '').replace('\n', ' ').replace('\r', ' '),
-                'nutrition_grade_fr': product.get('nutrition_grade_fr', ''),
+                'nutrition_grade_fr': product.get('nutrition_grade_fr', '').upper(),
                 'main_category': product.get('main_category', '').replace('\n', ' ').replace('\r', ' '),
                 'ingredients_text': product.get('ingredients_text', '').replace('\n', ' ').replace('\r', ' '),
                 'traces': product.get('traces', '').replace('\n', ' ').replace('\r', ' '),
@@ -106,7 +121,6 @@ def get_data():
                 'carbon_footprint_100g': product.get('nutriments', {}).get('carbon-footprint_100g', 0),
             }
 
-            # Create and save the Product instance
             prod = Product(**row)
             prod.save()
             print(f'Created product: {prod.product_name}')

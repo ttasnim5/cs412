@@ -4,43 +4,45 @@
 <div>
     <table>
         <tr>
-            <th><h3>product_name</h3></th>
-            <th><h3>code</h3></th>
-            <th><h3>categories</h3></th>
-            <th><h3>categories_tags</h3></th>
-            <th><h3>brands</h3></th>
-            <th><h3>origins</h3></th>
-            <th><h3>manufacturing_places</h3></th>
-            <th><h3>countries</h3></th>
-            <th><h3>nutrition_grade_fr</h3></th>
-            <th><h3>main_category</h3></th>
-            <th><h3>ingredients_text</h3></th>
-            <th><h3>traces</h3></th>
-            <th><h3>energy-kcal_100g</h3></th>
-            <th><h3>proteins_100g</h3></th>
-            <th><h3>carbohydrates_100g</h3></th>
-            <th><h3>fat_100g</h3></th>
-            <th><h3>carbon-footprint_100g</h3></th>
+            <th><h3>Product Name</h3></th>
+            <th><h3>Code</h3></th>
+            <th><h3>Categories</h3></th>
+            <th><h3>Tags</h3></th>
+            <th><h3>Brands</h3></th>
+            <th><h3>Origins</h3></th>
+            <th><h3>Places of Manufacture</h3></th>
+            <th><h3>Countries of Distribution</h3></th>
+            <th><h3>Nutrition Grade</h3></th>
+            <th><h3>Ingredients</h3></th>
+            <th><h3>Traces</h3></th>
+            <th><h3>Energy (kcal per 100g)</h3></th>
+            <th><h3>Proteins (per 100g)</h3></th>
+            <th><h3>Carbohydrates (per 100g)</h3></th>
+            <th><h3>Fats (per 100g)</h3></th>
+            <th><h3>Carbon Footprint (per 100g)</h3></th>
         </tr>
 
         <tr>
-            <td class="name"><p>{{p.product_name}}</p></td>
-            <td><p>{{p.code}}</p></td>
-            <td><p>{{p.categories}}</p></td>
-            <td><p>{{p.categories_tags}}</p></td>
-            <td><p>{{p.brands}}</p></td>
-            <td><p>{{p.origins}}</p></td>
-            <td><p>{{p.manufacturing_places}}</p></td>
-            <td><p>{{p.countries}}</p></td>
-            <td><p>{{p.nutrition_grade_fr}}</p></td>
-            <td><p>{{p.main_category}}</p></td>
-            <td><p>{{p.ingredients_text}}</p></td>
-            <td><p>{{p.traces}}</p></td>
-            <td><p>{{p.energy_kcal_100g}}</p></td>
-            <td><p>{{p.proteins_100g}}</p></td>
-            <td><p>{{p.carbohydrates_100g}}</p></td>
-            <td><p>{{p.fat_100g}}</p></td>
-            <td><p>{{p.carbon_footprint_100g}}</p></td>
+            <td class="name">
+                <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
+            </td>
+            <td class="name">
+                <a href="{% url 'product' p.pk %}"><p>{{ p.code|default:"N/A" }}</p></a>
+            </td>
+            <td><p>{{ p.categories|default:"N/A" }}</p></td>
+            <td><p>{{ p.categories_tags|default:"N/A" }}</p></td>
+            <td><p>{{ p.brands|default:"N/A" }}</p></td>
+            <td><p>{{ p.origins|default:"N/A" }}</p></td>
+            <td><p>{{ p.manufacturing_places|default:"N/A" }}</p></td>
+            <td><p>{{ p.countries|default:"N/A" }}</p></td>
+            <td><p>{{ p.nutrition_grade_fr|default:"N/A" }}</p></td>
+            <td><p>{{ p.ingredients_text|default:"N/A" }}</p></td>
+            <td><p>{{ p.traces|default:"N/A" }}</p></td>
+            <td><p>{{ p.energy_kcal_100g }}</p></td>
+            <td><p>{{ p.proteins_100g }}</p></td>
+            <td><p>{{ p.carbohydrates_100g}}</p></td>
+            <td><p>{{ p.fat_100g}}</p></td>
+            <td><p>{{ p.carbon_footprint_100g}}</p></td>
         </tr>
     </table>
 </div>
@@ -48,6 +50,9 @@
 <div>
     <h2>Distribution of macronutrients:</h2>
     <p>{{macro_distribution_graph|safe}}</p>
+    <p>{{geo_graph|safe}}</p>
+    <p>{{nutrition_grade_graph|safe}}</p>
+    <p>{{carbon_graph|safe}}</p>
 </div>
 
 {% endblock %}

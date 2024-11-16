@@ -11,44 +11,26 @@
     <div>
         <table>
             <tr>
-                <th><h3>product_name</h3></th>
-                <th><h3>code</h3></th>
-                <th><h3>categories</h3></th>
-                <th><h3>categories_tags</h3></th>
-                <th><h3>brands</h3></th>
-                <th><h3>origins</h3></th>
-                <th><h3>manufacturing_places</h3></th>
-                <th><h3>countries</h3></th>
-                <th><h3>nutrition_grade_fr</h3></th>
-                <th><h3>main_category</h3></th>
-                <th><h3>ingredients_text</h3></th>
-                <th><h3>traces</h3></th>
-                <th><h3>energy-kcal_100g</h3></th>
-                <th><h3>proteins_100g</h3></th>
-                <th><h3>carbohydrates_100g</h3></th>
-                <th><h3>fat_100g</h3></th>
-                <th><h3>carbon-footprint_100g</h3></th>
+                <th><h3>Product Name</h3></th>
+                <th><h3>Categories</h3></th>
+                <th><h3>Brands</h3></th>
+                <th><h3>Origins</h3></th>
+                <th><h3>Nutrition Grade</h3></th>
+                <th><h3>Energy (kcal per 100g)</h3></th>
+                <th><h3>Carbon Footprint (per 100g)</h3></th>
             </tr>
     
             {% for p in products %}
             <tr>
-                <td class="name"><a href="{% url 'product' p.pk %}"><p>{{p.product_name}}</p></a></td>
-                <td class="name"><a href="{% url 'product' p.pk %}"><p>{{p.code}}</p></a></td>
-                <td><p>{{p.categories}}</p></td>
-                <td><p>{{p.categories_tags}}</p></td>
-                <td><p>{{p.brands}}</p></td>
-                <td><p>{{p.origins}}</p></td>
-                <td><p>{{p.manufacturing_places}}</p></td>
-                <td><p>{{p.countries}}</p></td>
-                <td><p>{{p.nutrition_grade_fr}}</p></td>
-                <td><p>{{p.main_category}}</p></td>
-                <td><p>{{p.ingredients_text}}</p></td>
-                <td><p>{{p.traces}}</p></td>
-                <td><p>{{p.energy_kcal_100g}}</p></td>
-                <td><p>{{p.proteins_100g}}</p></td>
-                <td><p>{{p.carbohydrates_100g}}</p></td>
-                <td><p>{{p.fat_100g}}</p></td>
-                <td><p>{{p.carbon_footprint_100g}}</p></td>
+                <td class="name">
+                    <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
+                </td>
+                <td><p>{{ p.brands|default:"N/A" }}</p></td>
+                <td><p>{{ p.categories|default:"N/A" }}</p></td>
+                <td><p>{{ p.origins|default:"N/A" }}</p></td>
+                <td><p>{{ p.nutrition_grade_fr|default:"N/A" }}</p></td>
+                <td><p>{{ p.energy_kcal_100g|default:"N/A" }}</p></td>
+                <td><p>{{ p.carbon_footprint_100g|default:"N/A" }}</p></td>
             </tr>
             {% endfor %}
         </table>
@@ -60,8 +42,8 @@
             {% if page_obj.has_previous %}
                 <li>
                     <a href="?page={{ page_obj.previous_page_number }}">
-                        <div class="button">
-                            <span><h3>Previous</h3></span>
+                        <div>
+                            <span>Prev</span>
                         </div>
                     </a>
                 </li>
