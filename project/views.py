@@ -7,8 +7,6 @@ from . models import *
 import plotly
 import plotly.graph_objs as go
 
-# TODO: add ecoscore stuff (separate tag in api)
-
 class ProductsListView(ListView):
     '''View to display voter results'''
     template_name = 'project/home.html'
@@ -56,6 +54,20 @@ class ProductsListView(ListView):
         
         return qs
     
+# baby views to make webpages ordering products by nutrition / ecoscore grades
+# def products_by_nutrition_grade(request):
+#     products = Product.objects.filter(
+#         nutritional_info__nutrition_grade_fr__isnull=False
+#     ).order_by('nutritional_info__nutrition_grade_fr')
+#     return render(request, 'products_by_nutrition_grade.html', {'products': products})
+
+# def products_by_ecoscore(request):
+#     products = Product.objects.filter(
+#         environmental_info__ecoscore_grade__isnull=False
+#     ).order_by('environmental_info__ecoscore_grade')
+#     return render(request, 'products_by_ecoscore.html', {'products': products})
+
+
 class ProductDetailView(DetailView):
     '''View to show detail page for one product.'''
     template_name = 'project/product.html'
