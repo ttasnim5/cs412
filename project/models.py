@@ -11,7 +11,6 @@ class Cause(models.Model):
             ("Animal Welfare", "Animal Welfare"),
             ("Health & Nutrition", "Health & Nutrition"),
             ("Ethical Marketing", "Ethical Marketing"),
-            ("Community Support", "Community Support"),
         ],
     )
     description = models.TextField(null=True, blank=True)  # Optional for details about the cause
@@ -81,36 +80,82 @@ class Product(models.Model):
         return f"{self.product_name} by {brand_names}"
 
 ###################################################################################
-def get_data():
-    num_products = 15000
-    page_size = 1000
-    base_url = "https://world.openfoodfacts.org/cgi/search.pl"
 
+def analyze_causes(product_data):
+    """Infer causes for a product based on its data."""
+    inferred_causes = []
+
+    # Environmental Impact
+    ecoscore = product_data.get("ecoscore_grade", "").lower()
+    if ecoscore in ["a", "b"]:
+        environmental_cause, _ = Cause.objects.get_or_create(
+            title="Eco-Friendly Product",
+            category="Environmental Impact",
+            defaults={"description": "Product has a high ecoscore grade (A or B)."}
+        )
+        inferred_causes.append(environmental_cause)
+
+    if all(ingredient.get("vegan") == "yes" for ingredient in product_data.get("ingredients", [])):
+        vegan_cause = Cause.objects.get_or_create(
+            title="Vegan Product",
+            category="Animal Welfare",
+            defaults={"description": "The product is vegan-friendly, with no animal-derived ingredients."}
+        )[0]
+        inferred_causes.append(vegan_cause)
+
+    if all(ingredient.get("vegetarian") == "yes" for ingredient in product_data.get("ingredients", [])):
+            vegetarian_cause = Cause.objects.get_or_create(
+                title="Vegetarian Product",
+                category="Animal Welfare",
+                defaults={"description": "The product is vegetarian-friendly, with no non-vegetarian ingredients."}
+            )[0]
+            inferred_causes.append(vegetarian_cause)
+
+    # Health & Nutrition
+    if product_data.get("nutriments", {}).get("nutrition_score_fr_100g", 0) <= 2:
+        healthy_cause, _ = Cause.objects.get_or_create(
+            title="Healthy Choice",
+            category="Health & Nutrition",
+            defaults={"description": "Low nutrition score indicates a healthier product."}
+        )
+        inferred_causes.append(healthy_cause)
+
+    # Ethical Marketing
+    if "organic" in product_data.get("categories_tags", []):
+        organic_cause, _ = Cause.objects.get_or_create(
+            title="Certified Organic",
+            category="Ethical Marketing",
+            defaults={"description": "The product is certified organic, promoting ethical sourcing and marketing."}
+        )
+        inferred_causes.append(organic_cause)
+
+    return inferred_causes
+
+def get_data():
     Product.objects.all().delete()
     Cause.objects.all().delete()
     NutritionalInfo.objects.all().delete()
     EnvironmentalInfo.objects.all().delete()
     Brand.objects.all().delete()
 
-    for page in range(1, num_products // page_size + 1):
+    num_products = 100
+    base_url = "https://world.openfoodfacts.org/cgi/search.pl"
+
+    for page in range(1, (num_products // 100) + 1):
         response = requests.get(base_url, params={
             'action': 'process',
             'sort_by': 'popularity',
-            'page_size': page_size,
+            'page_size': 100,
             'page': page,
             'json': True
         })
 
         if response.status_code != 200:
-            print(f"Error: Failed to retrieve data on page {page}")
+            print(f"Error fetching data for page {page}")
             break
 
         data = response.json()
         products = data.get('products', [])
-
-        if not products:
-            print("No more products found; ending data retrieval.")
-            break
 
         for product in products:
             # Nutritional Info
@@ -161,41 +206,14 @@ def get_data():
                 if brand_name:
                     brand, _ = Brand.objects.get_or_create(brand_name=brand_name)
                     brand_objects.append(brand)
-                    # Update product categories for brand
+                    # update product categories for brand
                     if not brand.product_categories:
                         brand.product_categories = product_data['categories']
                         brand.save()
                     prod.brands.add(brand)
 
-            # Cause Analysis for Product
-            causes = []
-            if nutritional_info.nutrition_grade_fr in ['A', 'B']:
-                cause, _ = Cause.objects.get_or_create(
-                    title="High Nutritional Quality",
-                    category="Health & Nutrition",
-                    defaults={"description": "The product has a high nutrition score."}
-                )
-                causes.append(cause)
-                prod.causes.add(cause)
+            # infer and associate causes
+            causes = analyze_causes(product)
+            prod.causes.add(*causes)
 
-            if environmental_info.ecoscore_grade in ['a', 'a-plus', 'b']:
-                cause, _ = Cause.objects.get_or_create(
-                    title="Eco-Friendly",
-                    category="Environmental Impact",
-                    defaults={"description": "The product is environmentally sustainable."}
-                )
-                causes.append(cause)
-                prod.causes.add(cause)
-
-            # Assign Causes to Brands
-            for cause in causes:
-                for brand in brand_objects:
-                    brand.help_causes.add(cause)
-
-            print(f'Created product: {prod.product_name}')
-
-        if len(products) < page_size:
-            print("End of available products reached.")
-            break
-
-    print(f'Done. Created {Product.objects.count()} Products, {Brand.objects.count()} Brands, and associated Causes.')
+            print(f"Created Product: {prod.product_name} with {len(causes)} causes.")
