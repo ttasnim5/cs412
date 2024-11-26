@@ -1,11 +1,7 @@
 {% extends 'project/base.html' %}
-<h1>Showing all Products</h1>
+<h1>Showing all Products by Nutrition</h1>
 {% block content %}
 <div>
-    <div>
-        {% include "project/search.html" %}    
-    </div>
-
     <h1>Products</h1>
     <p> Entries shown: {{ products|length }}</p>
     <div>

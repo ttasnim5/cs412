@@ -7,7 +7,6 @@
             <th><h3>Product Name</h3></th>
             <th><h3>Code</h3></th>
             <th><h3>Categories</h3></th>
-            <th><h3>Tags</h3></th>
             <th><h3>Brands</h3></th>
             <th><h3>Origins</h3></th>
             <th><h3>Places of Manufacture</h3></th>
@@ -30,20 +29,33 @@
                 <a href="{% url 'product' p.pk %}"><p>{{ p.code|default:"N/A" }}</p></a>
             </td>
             <td><p>{{ p.categories|default:"N/A" }}</p></td>
-            <td><p>{{ p.categories_tags|default:"N/A" }}</p></td>
-            <td><p>{{ p.brands|default:"N/A" }}</p></td>
+            <td><p>{{ p.get_brands |default:"N/A" }}</p></td>
             <td><p>{{ p.origins|default:"N/A" }}</p></td>
             <td><p>{{ p.manufacturing_places|default:"N/A" }}</p></td>
             <td><p>{{ p.countries|default:"N/A" }}</p></td>
-            <td><p>{{ p.nutrition_grade_fr|default:"N/A" }}</p></td>
+            <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
             <td><p>{{ p.ingredients_text|default:"N/A" }}</p></td>
             <td><p>{{ p.traces|default:"N/A" }}</p></td>
-            <td><p>{{ p.energy_kcal_100g }}</p></td>
-            <td><p>{{ p.proteins_100g }}</p></td>
-            <td><p>{{ p.carbohydrates_100g}}</p></td>
-            <td><p>{{ p.fat_100g}}</p></td>
-            <td><p>{{ p.carbon_footprint_100g}}</p></td>
+            <td><p>{{ p.nutritional_info.energy_kcal_100g }}</p></td>
+            <td><p>{{ p.nutritional_info.proteins_100g }}</p></td>
+            <td><p>{{ p.nutritional_info.carbohydrates_100g}}</p></td>
+            <td><p>{{ p.nutritional_info.fat_100g}}</p></td>
+            <td><p>{{ p.environmental_info.carbon_footprint_100g}}</p></td>
         </tr>
+    </table>
+    <table>
+        <tr>
+            <th><h3>Causes</h3></th>
+            <th><h3>Category</h3></th>
+            <th><h3>Description</h3></th>
+        </tr>
+        {% for cause in p.causes.all %}
+        <tr>
+            <td><p>{{ cause.title }}</p></td>
+            <td><p>{{ cause.category }}</p></td>
+            <td><p>{{ cause.description }}</p></td>
+        </tr>
+        {% endfor %}
     </table>
 </div>
 

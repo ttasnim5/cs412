@@ -8,7 +8,7 @@ import plotly
 import plotly.graph_objs as go
 
 class ProductsListView(ListView):
-    '''View to display voter results'''
+    '''View to display product results'''
     template_name = 'project/home.html'
     model = Product
     context_object_name = 'products'
@@ -32,25 +32,25 @@ class ProductsListView(ListView):
         if product_name:
             qs = qs.filter(product_name__icontains=product_name)
         if brands:
-            qs = qs.filter(brands__icontains=brands)
+            qs = qs.filter(brands__brand_name__icontains=brands)
         if categories:
             qs = qs.filter(categories__icontains=categories)
         if origins:
             qs = qs.filter(origins__icontains=origins)
         if nutrition_grade_fr:
-            qs = qs.filter(nutrition_grade_fr=nutrition_grade_fr)
+            qs = qs.filter(nutritional_info__nutrition_grade_fr=nutrition_grade_fr)
         if ingredients:
             qs = qs.filter(ingredients_text__icontains=ingredients)
         if energy_kcal_100g:
-            qs = qs.filter(energy_kcal_100g__gte=energy_kcal_100g)
+            qs = qs.filter(nutritional_info__energy_kcal_100g__gte=energy_kcal_100g)
         if proteins_100g:
-            qs = qs.filter(proteins_100g__gte=proteins_100g)
+            qs = qs.filter(nutritional_info__proteins_100g__gte=proteins_100g)
         if carbohydrates_100g:
-            qs = qs.filter(carbohydrates_100g__gte=carbohydrates_100g)
+            qs = qs.filter(nutritional_info__carbohydrates_100g__gte=carbohydrates_100g)
         if fat_100g:
-            qs = qs.filter(fat_100g__gte=fat_100g)
+            qs = qs.filter(nutritional_info__fat_100g__gte=fat_100g)
         if carbon_footprint_100g:
-            qs = qs.filter(carbon_footprint_100g__gte=carbon_footprint_100g)
+            qs = qs.filter(environmental_info__carbon_footprint_100g__gte=carbon_footprint_100g)
         
         return qs
     
@@ -80,9 +80,9 @@ class ProductDetailView(DetailView):
         p = context.get('p')
 
         # ensure product has valid macronutrient data
-        if p.carbohydrates_100g !=0 and p.fat_100g !=0 and p.proteins_100g !=0:
+        if p.nutritional_info.carbohydrates_100g !=0 and p.nutritional_info.fat_100g !=0 and p.nutritional_info.proteins_100g !=0:
             x = ['Carbohydrates (g per 100g)', 'Fats (g per 100g)', 'Proteins (g per 100g)']
-            y = [p.carbohydrates_100g, p.fat_100g, p.proteins_100g]
+            y = [p.nutritional_info.carbohydrates_100g, p.nutritional_info.fat_100g, p.nutritional_info.proteins_100g]
             
             fig = go.Figure(data=[go.Pie(labels=x, values=y)])
             fig.update_layout(
@@ -145,8 +145,8 @@ class ProductDetailView(DetailView):
         geo_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
         context['geo_graph'] = geo_graph if (origins or manufacturing_places or countries) else "<p>Geographical data not available for this product.</p>"
         
-        if p.nutrition_grade_fr:
-            grade = p.nutrition_grade_fr.upper()
+        if p.nutritional_info.nutrition_grade_fr:
+            grade = p.nutritional_info.nutrition_grade_fr.upper()
             grade_value = ord(grade) - ord('A') + 1
             color_mapping = { 'A': 'darkgreen', 'B': 'lightgreen', 'C': 'yellow', 'D': 'orange', 'E': 'red' }
             bar_color = color_mapping.get(grade, 'gray')  # default to gray if grade is invalid
@@ -169,16 +169,60 @@ class ProductDetailView(DetailView):
         fig.update_layout(title_text="Nutrition Grade")
 
         nutrition_grade_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
-        context['nutrition_grade_graph'] = nutrition_grade_graph if (p.nutrition_grade_fr) else "<p>Nutrition Grading data not available for this product.</p>"
+        context['nutrition_grade_graph'] = nutrition_grade_graph if (p.nutritional_info.nutrition_grade_fr) else "<p>Nutrition Grading data not available for this product.</p>"
         
-        fig = go.Figure(go.Indicator(mode="number+gauge", value=p.carbon_footprint_100g,
+        fig = go.Figure(go.Indicator(mode="number+gauge", value=p.environmental_info.carbon_footprint_100g,
             gauge={
                 "axis": {"range": [0, 100]},
-                "bar": {"color": "green" if p.carbon_footprint_100g <= 50 else "red"}
+                "bar": {"color": "green" if p.environmental_info.carbon_footprint_100g <= 50 else "red"}
             }
         ))
         fig.update_layout(title_text="Carbon Footprint (g CO₂ per 100g)")
         carbon_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
-        context['carbon_graph'] = carbon_graph if (p.carbon_footprint_100g >= 0) else "<p>Environmental comparative data not displayed for this product.</p>"
+        context['carbon_graph'] = carbon_graph if (p.environmental_info.carbon_footprint_100g >= 0) else "<p>Environmental comparative data not displayed for this product.</p>"
         
         return context
+    
+class ProductsByNutritionView(ListView):
+    '''View to display product results by nutrition grade'''
+    template_name = 'project/nutrition_results.html'
+    model = Product
+    context_object_name = 'products'
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.order_by('nutritional_info__nutrition_grade_fr')
+
+class ProductsByEnvImpactView(ListView):
+    '''View to display product results by nutrition grade'''
+    template_name = 'project/env_impact_results.html'
+    model = Product
+    context_object_name = 'products'
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # this currently returns a > a+, need to FIX + capitalize
+        return qs.order_by('environmental_info__ecoscore_grade')
+    
+class ProductsByEnvCauseView(ListView):
+    '''View to display product results by nutrition grade'''
+    # put an arder by __ checkbox option on these
+
+    template_name = 'project/cause_results.html'
+    model = Product
+    context_object_name = 'products'
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(causes__category__icontains="Environmental Impact")
+        return qs
+    
+
+    # product page: 
+    #   + graph tab 
+    #   + comparison tab (products similar nutritionally, environmentally)
+    #   + brand tab
+    # brand page

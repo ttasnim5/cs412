@@ -75,9 +75,11 @@ class Product(models.Model):
     )
     causes = models.ManyToManyField(Cause, blank=True)
 
+    def get_brands(self):
+        return ", ".join([brand.brand_name for brand in self.brands.all()]) or "Unknown Brand"
+
     def __str__(self):
-        brand_names = ", ".join([brand.brand_name for brand in self.brands.all()]) or "Unknown Brand"
-        return f"{self.product_name} by {brand_names}"
+        return f"{self.product_name} by {self.get_brands()}"
 
 ###################################################################################
 
