@@ -1,0 +1,10 @@
+{% extends 'project/base.html' %}
+{% block content %}
+
+<div>
+    <h1>Brand Name: {{ brand.brand_name|default:"N/A" }}</h1>
+    <p>Product Categories: {{ brand.product_categories|default:"N/A" }}</p>
+</div>
+
+
+{% endblock %}

@@ -1,5 +1,5 @@
 from collections import Counter
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.db.models.query import QuerySet
 from django.views.generic import ListView, DetailView
 from . models import *
@@ -54,20 +54,6 @@ class ProductsListView(ListView):
         
         return qs
     
-# baby views to make webpages ordering products by nutrition / ecoscore grades
-# def products_by_nutrition_grade(request):
-#     products = Product.objects.filter(
-#         nutritional_info__nutrition_grade_fr__isnull=False
-#     ).order_by('nutritional_info__nutrition_grade_fr')
-#     return render(request, 'products_by_nutrition_grade.html', {'products': products})
-
-# def products_by_ecoscore(request):
-#     products = Product.objects.filter(
-#         environmental_info__ecoscore_grade__isnull=False
-#     ).order_by('environmental_info__ecoscore_grade')
-#     return render(request, 'products_by_ecoscore.html', {'products': products})
-
-
 class ProductDetailView(DetailView):
     '''View to show detail page for one product.'''
     template_name = 'project/product.html'
@@ -153,7 +139,7 @@ class ProductDetailView(DetailView):
         else: # defaults/unknown values
             grade_value = 0  
 
-        # Create the gauge chart
+        # create the gauge chart
         fig = go.Figure(go.Indicator(
             mode="gauge+number", value=grade_value,
             gauge={
@@ -206,23 +192,53 @@ class ProductsByEnvImpactView(ListView):
         # this currently returns a > a+, need to FIX + capitalize
         return qs.order_by('environmental_info__ecoscore_grade')
     
-class ProductsByEnvCauseView(ListView):
+class CauseListView(ListView):
     '''View to display product results by nutrition grade'''
     # put an arder by __ checkbox option on these
-
-    template_name = 'project/cause_results.html'
-    model = Product
-    context_object_name = 'products'
+    template_name = 'project/cause_list.html'
+    model = Cause
+    context_object_name = 'causes'
     paginate_by = 25
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.filter(causes__category__icontains="Environmental Impact")
-        return qs
-    
+class ShowBrandPageView(DetailView):
+    '''Displays the detail of a specific profile by their primary key'''
+    model = Brand  # specifies which model to use for this view
+    template_name = 'project/show_brand.html'  
+    context_object_name = 'brand'  # name to use for the profile object in the template
 
+    def post(self, request, *args, **kwargs): # handles POST requests (i.e., form submissions)
+        self.object = self.get_object()  # get brand object
+        return redirect('show_brand', pk=self.object.pk)  # redirect to the profile page
+
+class ShowCausePageView(DetailView):
+    '''Displays the detail of a specific cause by their primary key'''
+    model = Cause  # specifies which model to use for this view
+    template_name = 'project/show_cause.html'  
+    context_object_name = 'cause'  # name to use for the profile object in the template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cause = self.get_object()  # get the current cause object
+        products = cause.product_set.all()  # retrieve all products associated with this cause
+        context['products'] = products 
+        return context
+    
+class ShowCauseCategoryView(DetailView):
+    '''Displays all products associated with a cause category.'''
+    model = Cause
+    template_name = 'project/cause_category.html'
+    context_object_name = 'cause'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cause = self.get_object()  # current cause object
+        # get all products linked to causes in the same category
+        related_causes = Cause.objects.filter(category=cause.category)
+        products = Product.objects.filter(causes__in=related_causes).distinct()
+        context['products'] = products
+        context['category'] = cause.category
+        return context
+    
     # product page: 
     #   + graph tab 
     #   + comparison tab (products similar nutritionally, environmentally)
-    #   + brand tab
-    # brand page

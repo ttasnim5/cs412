@@ -1,0 +1,12 @@
+{% extends 'project/base.html' %}
+<h1>Showing all Products by this cause</h1>
+{% block content %}
+<div>
+    <h1>All of our related causes:</h1>
+    {% for cause in causes %}
+        <p><a href="{% url 'show_cause' cause.pk %}">TITLE: {{ cause.title }}</a></p>
+        <p><a href="{% url 'cause_category' cause.pk %}">Category: {{ cause.category }}</a></p>
+        <p>Description: {{ cause.description }}</p>
+    {% endfor %}
+</div>    
+{% endblock %}

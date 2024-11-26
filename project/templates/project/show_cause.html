@@ -4,6 +4,10 @@
 <div>
 
     <h1>Products by this cause</h1>
+    <h3>{{ cause.title }}</h3>
+    <h3>{{ cause.category }}</h3>
+    <h3>{{ cause.description }}</h3>
+
     <p> Entries shown: {{ products|length }}</p>
     <div>
         <table>
@@ -13,7 +17,6 @@
                 <th><h3>Categories</h3></th>
                 <th><h3>Origins</h3></th>
                 <th><h3>Nutrition Grade</h3></th>
-                <th><h3>Energy (kcal per 100g)</h3></th>
                 <th><h3>EcoScore</h3></th>
             </tr>
     
@@ -26,7 +29,6 @@
                 <td><p>{{ p.categories|default:"N/A" }}</p></td>
                 <td><p>{{ p.origins|default:"N/A" }}</p></td>
                 <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
-                <td><p>{{ p.nutritional_info.energy_kcal_100g|default:"N/A" }}</p></td>
                 <td><p>{{ p.environmental_info.ecoscore_grade|default:"N/A" }}</p></td>
             </tr>
             {% endfor %}

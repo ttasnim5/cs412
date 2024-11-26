@@ -1,8 +1,11 @@
 {% extends 'project/base.html' %}
-<h1>Showing all Products by Environmental Friendliness</h1>
+<h1>Showing all Products by this cause</h1>
 {% block content %}
 <div>
-    <h1>Products</h1>
+
+    <h1>Products in this category</h1>
+    <h3>{{ cause.category }}</h3>
+
     <p> Entries shown: {{ products|length }}</p>
     <div>
         <table>
@@ -11,8 +14,8 @@
                 <th><h3>Brands</h3></th>
                 <th><h3>Categories</h3></th>
                 <th><h3>Origins</h3></th>
-                <th><h3>EcoScore</h3></th>
                 <th><h3>Nutrition Grade</h3></th>
+                <th><h3>EcoScore</h3></th>
             </tr>
     
             {% for p in products %}
@@ -23,8 +26,8 @@
                 <td><p>{{ p.get_brands|default:"N/A" }}</p></td>
                 <td><p>{{ p.categories|default:"N/A" }}</p></td>
                 <td><p>{{ p.origins|default:"N/A" }}</p></td>
-                <td><p>{{ p.environmental_info.ecoscore_grade|default:"N/A" }}</p></td>
                 <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
+                <td><p>{{ p.environmental_info.ecoscore_grade|default:"N/A" }}</p></td>
             </tr>
             {% endfor %}
         </table>

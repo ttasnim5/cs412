@@ -29,7 +29,16 @@
                 <a href="{% url 'product' p.pk %}"><p>{{ p.code|default:"N/A" }}</p></a>
             </td>
             <td><p>{{ p.categories|default:"N/A" }}</p></td>
-            <td><p>{{ p.get_brands |default:"N/A" }}</p></td>
+
+            <td>
+                {% if p.brands.all %}
+                    {% for brand in p.brands.all %}
+                        <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
             <td><p>{{ p.origins|default:"N/A" }}</p></td>
             <td><p>{{ p.manufacturing_places|default:"N/A" }}</p></td>
             <td><p>{{ p.countries|default:"N/A" }}</p></td>
@@ -51,7 +60,7 @@
         </tr>
         {% for cause in p.causes.all %}
         <tr>
-            <td><p>{{ cause.title }}</p></td>
+            <td><p><a href="{% url 'show_cause' cause.pk %}">{{ cause.title }}</a></p></td>
             <td><p>{{ cause.category }}</p></td>
             <td><p>{{ cause.description }}</p></td>
         </tr>
