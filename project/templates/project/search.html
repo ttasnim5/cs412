@@ -5,20 +5,31 @@
             <th><p>Product Name:<p></th>
             <th><p>Brand:</p></th>
             <th><p>Categories:</p></th>
-            <th><p>Origins:</p></th>
-            <th><p>Nutrition Grade:<p></th>
-            <th><p>Ingredients:</p></th>
-            <th><p>Energy (k-cal per 100g):</p></th>
-            <th><p>Proteins (per 100g):</p></th>
-            <th><p>Carbohydrates (per 100g):</p></th>
-            <th><p>Fats (per 100g):</p></th>
-            <th><p>Carbon Footprint (per 100g):</p></th>
         </tr>
         <tr>
             <td><input type="text" name="product_name"></td>
             <td><input type="text" name="brands"></td>
             <td><input type="text" name="categories"></td>
+        </tr>
+        <tr>
+            <th><p>Origins:</p></th>
+            <th><p>EcoScore:</p></th>
+            <th><p>Nutrition Grade:<p></th>
+            <th><p>Ingredients:</p></th>
+        </tr>
+        <tr>
             <td><input type="text" name="origins"></td>
+            <td>
+                <select name="ecoscore">
+                    <option value="">EcoScore</option>
+                    <option value="a"><p>A</p></option>
+                    <option value="b"><p>B</p></option>
+                    <option value="c"><p>C</p></option>
+                    <option value="d"><p>D</p></option>
+                    <option value="e"><p>E</p></option>
+                    <option value="f"><p>F</p></option>
+                </select>
+            </td>
             <td>
                 <select name="nutrition_grade_fr">
                     <option value="">Nutrition Grade</option>
@@ -31,11 +42,6 @@
                 </select>
             </td>
             <td><input type="text" name="ingredients"></td>
-            <td><input type="number" name="energy_kcal_100g"></td>
-            <td><input type="number" name="proteins_100g"></td>
-            <td><input type="number" name="carbohydrates_100g"></td>
-            <td><input type="number" name="fat_100g"></td>
-            <td><input type="number" name="carbon_footprint_100g"></td>
         </tr>
     </table>
 

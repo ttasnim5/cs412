@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 import requests
 
 class Cause(models.Model):
@@ -23,7 +24,7 @@ class Brand(models.Model):
     '''Store/represent the data relating to one brand'''
     brand_name = models.CharField(max_length=255, unique=True)  # unique to prevent duplicates
     product_categories = models.TextField(null=True, blank=True)
-    help_causes = models.ManyToManyField(Cause, blank=True)  # causes supported by the brand
+    help_causes = models.ManyToManyField(Cause, blank=True)  # causes supported by the brand     
 
     def __str__(self):
         return f'{self.brand_name}'
@@ -75,8 +76,8 @@ class Product(models.Model):
     )
     causes = models.ManyToManyField(Cause, blank=True)
 
-    def get_brands(self):
-        return ", ".join([brand.brand_name for brand in self.brands.all()]) or "Unknown Brand"
+    def get_absolute_url(self):
+        return reverse('product', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f"{self.product_name} by {self.get_brands()}"

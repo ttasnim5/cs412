@@ -15,17 +15,20 @@ nav ul li {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 1.25rem;
     line-height: 1rem;
-    transition: background-color 0.3s ease;
     margin: 0 0.5rem; 
+    border-radius: .75rem;
+    transition: background-color 0.3s ease;
 }
-nav ul li a {
-    color:#035f0c;
-}
+
 nav ul li:hover {
     background-color: #08aa9a;
 }
 nav ul li:hover a {
     color: white;
+}
+
+nav ul li a {
+    color:black;
 }
 
 .title {
@@ -39,6 +42,7 @@ ul {
 
 a {
     text-decoration: none;
+    color: inherit;
 }
 
 h1 {
@@ -64,7 +68,12 @@ p {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-tr {transition: background-color 0.3s ease;}
+table {
+    display:flexbox;
+    flex-wrap: wrap; 
+}
+
+tr {transition: background-color 0.3s ease; }
 tr:nth-child(even){background-color: #f2f2f2;}
 tr:hover {background-color: #ddd;}
 
@@ -72,29 +81,76 @@ th {
     padding: .5rem;
     text-align: center;
     justify-content: center;
-    background-color: #c3eede;
+    background-color: #6de5d9;
+    border-radius: .4rem;
 }
 
 td {
     padding: .5rem;
+    border-radius: .4rem;
 }
 
-span, input[type="submit"], button[type="submit"] {
+.cause-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* center-align child elements */
+    justify-content: flex-start; /* remove unnecessary space between elements */
+    margin: .75rem;
+    padding: 1rem;
+    width: 45%; /* fixed width */
+    height: 15.75rem; /* fixed height */
+    background-color: antiquewhite;
+    border-radius: 1.5rem;
+    box-shadow: 2px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cause-card h3 {
+    margin: 0.30rem 0;
+    text-align: center;
+    text-wrap:wrap;
+}
+
+.cause-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cause, .category {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* center-align child elements */
+    justify-content: flex-start; /* remove unnecessary space between elements */
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #08aa9a;
+    border-radius: 1.5rem;
+    box-shadow: 2px 1px 5px rgba(0, 0, 0, 0.2);
+    transition: 0.3s ease;
+}
+
+.cause:hover, .category:hover {
+    background-color: #c3eede;
+    cursor: pointer;
+}
+
+span, input[type="submit"], button[type="submit"], .button {
     text-align: center;
     align-items: center;
     margin: .5rem; 
     padding: 0.75rem; 
-    background-color:#9EDF9C;
+    background-color:#c3eede;
     border: none; 
     cursor: pointer;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     color: black;
     font-size: 1rem;;
+    border-radius: .5rem;
     transition: background-color 0.3s ease;
 }
 
-span:hover, input[type="submit"]:hover, button[type="submit"]:hover {
-    background-color: #62825D; 
+span:hover, input[type="submit"]:hover, button[type="submit"]:hover, .button:hover {
+    background-color: #85c17c; 
     color: white;
 }
 

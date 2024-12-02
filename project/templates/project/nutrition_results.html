@@ -2,7 +2,7 @@
 <h1>Showing all Products by Nutrition</h1>
 {% block content %}
 <div>
-    <h1>Products</h1>
+    <h1>Products by Nutrition Grade</h1>
     <p> Entries shown: {{ products|length }}</p>
     <div>
         <table>
@@ -20,7 +20,15 @@
                 <td class="name">
                     <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
                 </td>
-                <td><p>{{ p.get_brands|default:"N/A" }}</p></td>
+                <td class="name">
+                    {% if p.brands.all %}
+                        {% for brand in p.brands.all %}
+                            <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
                 <td><p>{{ p.categories|default:"N/A" }}</p></td>
                 <td><p>{{ p.origins|default:"N/A" }}</p></td>
                 <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>

@@ -7,6 +7,11 @@ from . models import *
 import plotly
 import plotly.graph_objs as go
 
+# todo list: separate out the origins, manufacture places, ingredients, categories
+# make buttons smaller ??
+# restrict size of display and make table cols evenly spaced
+# make the product information "click for more"
+   
 class ProductsListView(ListView):
     '''View to display product results'''
     template_name = 'project/home.html'
@@ -57,6 +62,12 @@ class ProductsListView(ListView):
 class ProductDetailView(DetailView):
     '''View to show detail page for one product.'''
     template_name = 'project/product.html'
+    model = Product
+    context_object_name = 'p'
+    
+class ProductGraphsDetailView(DetailView):
+    '''View to show detail page for one product.'''
+    template_name = 'project/product_graph.html'
     model = Product
     context_object_name = 'p'
 
@@ -201,14 +212,18 @@ class CauseListView(ListView):
     paginate_by = 25
 
 class ShowBrandPageView(DetailView):
-    '''Displays the detail of a specific profile by their primary key'''
+    '''Displays the detail of a specific cause by their primary key'''
     model = Brand  # specifies which model to use for this view
     template_name = 'project/show_brand.html'  
     context_object_name = 'brand'  # name to use for the profile object in the template
 
-    def post(self, request, *args, **kwargs): # handles POST requests (i.e., form submissions)
-        self.object = self.get_object()  # get brand object
-        return redirect('show_brand', pk=self.object.pk)  # redirect to the profile page
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        brand = self.get_object()  # get the current object
+        products = brand.products.all()
+        # related_name="products" overrides the default reverse accessor (product_set) with products
+        context['products'] = products 
+        return context
 
 class ShowCausePageView(DetailView):
     '''Displays the detail of a specific cause by their primary key'''
@@ -240,5 +255,4 @@ class ShowCauseCategoryView(DetailView):
         return context
     
     # product page: 
-    #   + graph tab 
     #   + comparison tab (products similar nutritionally, environmentally)

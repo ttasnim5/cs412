@@ -25,7 +25,15 @@
                 <td class="name">
                     <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
                 </td>
-                <td><p>{{ p.get_brands|default:"N/A" }}</p></td>
+                <td class="name">
+                    {% if p.brands.all %}
+                        {% for brand in p.brands.all %}
+                            <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
                 <td><p>{{ p.categories|default:"N/A" }}</p></td>
                 <td><p>{{ p.origins|default:"N/A" }}</p></td>
                 <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
@@ -42,9 +50,7 @@
             {% if page_obj.has_previous %}
                 <li>
                     <a href="?page={{ page_obj.previous_page_number }}">
-                        <div>
-                            <span>Prev</span>
-                        </div>
+                        <div class="button"><h3>Prev</h3></div>
                     </a>
                 </li>
             {% endif %}
@@ -54,9 +60,7 @@
             {% if page_obj.has_next %}
                 <li>
                     <a href="?page={{ page_obj.next_page_number }}">
-                        <div>
-                            <span>Next</span>
-                        </div>
+                        <div class="button"><h3>Next</h3></div>
                     </a>
                 </li>
             {% endif %}

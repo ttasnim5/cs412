@@ -1,12 +1,25 @@
 {% extends 'project/base.html' %}
 <h1>Showing all Products by this cause</h1>
 {% block content %}
-<div>
-    <h1>All of our related causes:</h1>
+
+
+<h1>All of our related causes:</h1>
+
+<div class="cause-list">
     {% for cause in causes %}
-        <p><a href="{% url 'show_cause' cause.pk %}">TITLE: {{ cause.title }}</a></p>
-        <p><a href="{% url 'cause_category' cause.pk %}">Category: {{ cause.category }}</a></p>
-        <p>Description: {{ cause.description }}</p>
+    <div class="cause-card">
+
+        <a href="{% url 'show_cause' cause.pk %}"><div class="cause">
+            <h3>Title: {{ cause.title }}</h3>
+        </a></div>
+
+        <a href="{% url 'cause_category' cause.pk %}"><div class="category">
+            <h3>Category: {{ cause.category }}</h3>
+        </a></div>
+
+        <p>{{ cause.description }}</p>
+    </div>
     {% endfor %}
 </div>    
+
 {% endblock %}

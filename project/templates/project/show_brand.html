@@ -2,8 +2,20 @@
 {% block content %}
 
 <div>
-    <h1>Brand Name: {{ brand.brand_name|default:"N/A" }}</h1>
-    <p>Product Categories: {{ brand.product_categories|default:"N/A" }}</p>
+    <h1>{{ brand.brand_name|default:"N/A" }}</h1>
+    <h3>Product Categories:</h3>
+    <p>{{ brand.product_categories|default:"N/A" }}</p>
+
+    <h3>Products by {{ brand.brand_name|default:"N/A" }}:</h3>
+    <ul>
+        {% for product in products %}
+            <div class="button"><li>
+                <a href="{{ product.get_absolute_url }}">{{ product.product_name }}</a>
+            </li></div>
+        {% empty %}
+            <li>No products found for this brand.</li>
+        {% endfor %}
+    </ul>
 </div>
 
 

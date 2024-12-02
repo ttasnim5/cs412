@@ -1,0 +1,36 @@
+{% extends 'project/base.html' %}
+{% block content %}
+
+<div>
+    <table>
+        <tr>
+            <th><h3>Product Name</h3></th>
+            <th><h3>Brands</h3></th>
+        </tr>
+
+        <tr>
+            <td class="name">
+                <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
+            </td>
+            <td>
+                {% if p.brands.all %}
+                    {% for brand in p.brands.all %}
+                        <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <h2>Distribution of macronutrients:</h2>
+    <p>{{macro_distribution_graph|safe}}</p>
+    <p>{{geo_graph|safe}}</p>
+    <p>{{nutrition_grade_graph|safe}}</p>
+    <p>{{carbon_graph|safe}}</p>
+</div>
+
+{% endblock %}

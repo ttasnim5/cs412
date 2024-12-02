@@ -2,23 +2,13 @@
 {% block content %}
 
 <div>
+    <a href="{% url 'product_graph' p.pk %}"><div class="button"><h3>See Graphs</h3></div></a>
     <table>
         <tr>
             <th><h3>Product Name</h3></th>
             <th><h3>Code</h3></th>
             <th><h3>Categories</h3></th>
             <th><h3>Brands</h3></th>
-            <th><h3>Origins</h3></th>
-            <th><h3>Places of Manufacture</h3></th>
-            <th><h3>Countries of Distribution</h3></th>
-            <th><h3>Nutrition Grade</h3></th>
-            <th><h3>Ingredients</h3></th>
-            <th><h3>Traces</h3></th>
-            <th><h3>Energy (kcal per 100g)</h3></th>
-            <th><h3>Proteins (per 100g)</h3></th>
-            <th><h3>Carbohydrates (per 100g)</h3></th>
-            <th><h3>Fats (per 100g)</h3></th>
-            <th><h3>Carbon Footprint (per 100g)</h3></th>
         </tr>
 
         <tr>
@@ -30,7 +20,7 @@
             </td>
             <td><p>{{ p.categories|default:"N/A" }}</p></td>
 
-            <td>
+            <td class="name">
                 {% if p.brands.all %}
                     {% for brand in p.brands.all %}
                         <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
@@ -39,9 +29,35 @@
                     N/A
                 {% endif %}
             </td>
+        </tr>
+        <tr>
+            <th><h3>Origins</h3></th>
+            <th><h3>Places of Manufacture</h3></th>
+            <th><h3>Countries of Distribution</h3></th>
+        </tr>
+        <tr>
             <td><p>{{ p.origins|default:"N/A" }}</p></td>
             <td><p>{{ p.manufacturing_places|default:"N/A" }}</p></td>
             <td><p>{{ p.countries|default:"N/A" }}</p></td>
+        </tr>
+        <tr>
+            <th><h3>EcoScore</h3></th>
+            <th><h3>Carbon Footprint (per 100g)</h3></th>
+        </tr>
+        <tr>
+            <td><p>{{ p.environmental_info.ecoscore_grade}}</p></td>
+            <td><p>{{ p.environmental_info.carbon_footprint_100g}}</p></td>
+        </tr>
+        <tr>
+            <th><h3>Nutrition Grade</h3></th>
+            <th><h3>Ingredients</h3></th>
+            <th><h3>Traces</h3></th>
+            <th><h3>Energy (kcal per 100g)</h3></th>
+            <th><h3>Proteins (per 100g)</h3></th>
+            <th><h3>Carbohydrates (per 100g)</h3></th>
+            <th><h3>Fats (per 100g)</h3></th>
+        </tr>
+        <tr>
             <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
             <td><p>{{ p.ingredients_text|default:"N/A" }}</p></td>
             <td><p>{{ p.traces|default:"N/A" }}</p></td>
@@ -49,8 +65,8 @@
             <td><p>{{ p.nutritional_info.proteins_100g }}</p></td>
             <td><p>{{ p.nutritional_info.carbohydrates_100g}}</p></td>
             <td><p>{{ p.nutritional_info.fat_100g}}</p></td>
-            <td><p>{{ p.environmental_info.carbon_footprint_100g}}</p></td>
         </tr>
+
     </table>
     <table>
         <tr>
@@ -66,14 +82,6 @@
         </tr>
         {% endfor %}
     </table>
-</div>
-
-<div>
-    <h2>Distribution of macronutrients:</h2>
-    <p>{{macro_distribution_graph|safe}}</p>
-    <p>{{geo_graph|safe}}</p>
-    <p>{{nutrition_grade_graph|safe}}</p>
-    <p>{{carbon_graph|safe}}</p>
 </div>
 
 {% endblock %}
