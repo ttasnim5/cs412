@@ -7,10 +7,9 @@ from . models import *
 import plotly
 import plotly.graph_objs as go
 
-# todo list: separate out the origins, manufacture places, ingredients, categories
+# todo list: separate out and translate the origins, manufacture places, ingredients, categories
 # make buttons smaller ??
-# restrict size of display and make table cols evenly spaced
-# make the product information "click for more"
+# fix a vs a-plus and capitalization with ecoscore
    
 class ProductsListView(ListView):
     '''View to display product results'''
