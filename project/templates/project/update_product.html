@@ -1,0 +1,117 @@
+{% extends 'project/base.html' %}
+{% block content %}
+
+<h3>Update Product: {{ p.product_name }}</h3>
+<form method="post" action="{% url 'update_product' p.pk %}">
+    {% csrf_token %}
+    <table>
+        <!-- Product Information -->
+        <tr>
+            <th><h3>Product Name:</h3></th>
+            <td><input type="text" name="product_name" value="{{ p.product_name }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Brands:</h3></th>
+            <td>
+                <textarea name="brands" rows="3">{{ p.brands.all|join:',' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th><h3>Categories:</h3></th>
+            <td><textarea name="categories" rows="3">{{ p.categories }}</textarea></td>
+        </tr>
+        <tr>
+            <th><h3>Origins:</h3></th>
+            <td><textarea name="origins" rows="3">{{ p.origins }}</textarea></td>
+        </tr>
+        <tr>
+            <th><h3>Manufacturing Places:</h3></th>
+            <td><textarea name="manufacturing_places" rows="3">{{ p.manufacturing_places }}</textarea></td>
+        </tr>
+        <tr>
+            <th><h3>Countries:</h3></th>
+            <td><textarea name="countries" rows="3">{{ p.countries }}</textarea></td>
+        </tr>
+
+        <!-- Environmental Information -->
+        <tr>
+            <th><h3>EcoScore:</h3></th>
+            <td>
+                <select name="ecoscore">
+                    <option value="">EcoScore</option>
+                    {% for grade in ecoscore_choices %}
+                        <option value="{{ grade }}" {% if p.environmental_info and p.environmental_info.ecoscore_grade == grade %}selected{% endif %}>
+                            {{ grade|upper }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        
+        <tr>
+            <th><h3>Carbon Footprint (per 100g):</h3></th>
+            <td><input type="number" name="carbon_footprint_100g" value="{{ p.environmental_info.carbon_footprint_100g }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Packaging:</h3></th>
+            <td><textarea name="packaging" rows="3">{{ p.environmental_info.packaging }}</textarea></td>
+        </tr>
+        <tr>
+            <th><h3>Production System:</h3></th>
+            <td><textarea name="production_system" rows="3">{{ p.environmental_info.production_system }}</textarea></td>
+        </tr>
+
+        <!-- Nutritional Information -->
+        <tr>
+            <th><h3>Energy (kcal per 100g):</h3></th>
+            <td><input type="number" name="energy_kcal_100g" value="{{ p.nutritional_info.energy_kcal_100g }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Proteins (per 100g):</h3></th>
+            <td><input type="number" name="proteins_100g" value="{{ p.nutritional_info.proteins_100g }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Carbohydrates (per 100g):</h3></th>
+            <td><input type="number" name="carbohydrates_100g" value="{{ p.nutritional_info.carbohydrates_100g }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Fats (per 100g):</h3></th>
+            <td><input type="number" name="fat_100g" value="{{ p.nutritional_info.fat_100g }}"></td>
+        </tr>
+        <tr>
+            <th><h3>Nutrition Grade:</h3></th>
+            <td>
+                <select name="nutrition_grade_fr">
+                    <option value="">Nutrition Grade</option>
+                    {% for grade in nutrition_grade_choices %}
+                        <option value="{{ grade }}" {% if p.nutritional_info and p.nutritional_info.nutrition_grade_fr == grade %}selected{% endif %}>
+                            {{ grade }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>        
+
+        <!-- Causes (Many-to-Many Relationship) -->
+        <tr>
+            <th>
+                <h3>Causes:</h3>
+                <p>(do shift+click to choose multiple :3)</p>
+            </th>
+            <td>
+                <select name="causes" multiple>
+                    {% for cause in causes %}
+                        <option value="{{ cause.pk }}" {% if cause in p.causes.all %}selected{% endif %}>
+                            {{ cause.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Submit Button -->
+    <input type="submit" value="Update">
+</form>
+
+{% endblock %}

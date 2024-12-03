@@ -36,7 +36,15 @@
                 <td><p>{{ p.categories|default:"N/A" }}</p></td>
                 <td><p>{{ p.origins|default:"N/A" }}</p></td>
                 <td><p>{{ p.nutritional_info.nutrition_grade_fr|default:"N/A" }}</p></td>
-                <td><p>{{ p.environmental_info.ecoscore_grade|default:"N/A" }}</p></td>
+                <td>
+                    <p>
+                        {% if p.environmental_info.ecoscore_grade|lower == "a-plus" %}
+                            A+
+                        {% else %}
+                            {{ p.environmental_info.ecoscore_grade|upper|default:"N/A" }}
+                        {% endif %}
+                    </p>
+                </td>
             </tr>
             {% endfor %}
         </table>

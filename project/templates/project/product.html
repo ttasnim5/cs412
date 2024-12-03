@@ -2,34 +2,23 @@
 {% block content %}
 
 <div>
+    <h3>{{ p.product_name|default:"Unregistered Product Name" }} by 
+        {% if p.brands.all %}
+        {% for brand in p.brands.all %}
+            <a href="{% url 'show_brand' brand.pk %}" class="brand_name">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% else %}
+            N/A
+        {% endif %}
+    </h3>
+
+    <h3>Categories:</h3>
+    <p>{{ p.categories|default:"N/A" }}</p>
+    
     <a href="{% url 'product_graph' p.pk %}"><div class="button"><h3>See Graphs</h3></div></a>
+
+    <h3>Geographical Information</h3>
     <table>
-        <tr>
-            <th><h3>Product Name</h3></th>
-            <th><h3>Code</h3></th>
-            <th><h3>Categories</h3></th>
-            <th><h3>Brands</h3></th>
-        </tr>
-
-        <tr>
-            <td class="name">
-                <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
-            </td>
-            <td class="name">
-                <a href="{% url 'product' p.pk %}"><p>{{ p.code|default:"N/A" }}</p></a>
-            </td>
-            <td><p>{{ p.categories|default:"N/A" }}</p></td>
-
-            <td class="name">
-                {% if p.brands.all %}
-                    {% for brand in p.brands.all %}
-                        <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                {% else %}
-                    N/A
-                {% endif %}
-            </td>
-        </tr>
         <tr>
             <th><h3>Origins</h3></th>
             <th><h3>Places of Manufacture</h3></th>
@@ -40,14 +29,28 @@
             <td><p>{{ p.manufacturing_places|default:"N/A" }}</p></td>
             <td><p>{{ p.countries|default:"N/A" }}</p></td>
         </tr>
+    </table>
+
+    <h3>Environmental Information</h3>
+    <table>
         <tr>
             <th><h3>EcoScore</h3></th>
             <th><h3>Carbon Footprint (per 100g)</h3></th>
         </tr>
         <tr>
-            <td><p>{{ p.environmental_info.ecoscore_grade}}</p></td>
+            <td><p>
+                {% if p.environmental_info.ecoscore_grade|lower == "a-plus" %}
+                    A+
+                {% else %}
+                    {{ p.environmental_info.ecoscore_grade|upper|default:"N/A" }}
+                {% endif %}
+            </p></td>
             <td><p>{{ p.environmental_info.carbon_footprint_100g}}</p></td>
         </tr>
+    </table>
+
+    <h3>Nutritional Information</h3>
+    <table>
         <tr>
             <th><h3>Nutrition Grade</h3></th>
             <th><h3>Ingredients</h3></th>
@@ -66,8 +69,9 @@
             <td><p>{{ p.nutritional_info.carbohydrates_100g}}</p></td>
             <td><p>{{ p.nutritional_info.fat_100g}}</p></td>
         </tr>
-
     </table>
+
+    <h3>Social causes of this product:</h3>
     <table>
         <tr>
             <th><h3>Causes</h3></th>
@@ -82,6 +86,9 @@
         </tr>
         {% endfor %}
     </table>
+
+    <h3>See information thats missing or incorrect? Help us fix it!</h3>
+    <a href="{% url 'update_product' p.pk %}"><div class="button"><h3>Update This Product</h3></div></a>
 </div>
 
 {% endblock %}

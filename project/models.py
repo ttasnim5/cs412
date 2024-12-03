@@ -115,7 +115,8 @@ def analyze_causes(product_data):
             inferred_causes.append(vegetarian_cause)
 
     # Health & Nutrition
-    if product_data.get("nutriments", {}).get("nutrition_score_fr_100g", 0) <= 2:
+    healthy = product_data.get('nutrition_grade_fr', '').upper()
+    if healthy in ["A", "B"]:
         healthy_cause, _ = Cause.objects.get_or_create(
             title="Healthy Choice",
             category="Health & Nutrition",

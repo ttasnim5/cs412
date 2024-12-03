@@ -1,7 +1,7 @@
-from collections import Counter
+from django.db.models import Case, When, Value, CharField
 from django.shortcuts import redirect
 from django.db.models.query import QuerySet
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from . models import *
 
 import plotly
@@ -10,6 +10,7 @@ import plotly.graph_objs as go
 # todo list: separate out and translate the origins, manufacture places, ingredients, categories
 # make buttons smaller ??
 # fix a vs a-plus and capitalization with ecoscore
+#  add a data add/change/delete option for each product
    
 class ProductsListView(ListView):
     '''View to display product results'''
@@ -26,12 +27,8 @@ class ProductsListView(ListView):
         categories = self.request.GET.get('categories', '').strip()
         origins = self.request.GET.get('origins', '').strip()
         nutrition_grade_fr = self.request.GET.get('nutrition_grade_fr', '')
-        ingredients = self.request.GET.get('ingredients', '').strip()
-        energy_kcal_100g = self.request.GET.get('energy_kcal_100g', '').strip()
-        proteins_100g = self.request.GET.get('proteins_100g', '').strip()
-        carbohydrates_100g = self.request.GET.get('carbohydrates_100g', '').strip()
-        fat_100g = self.request.GET.get('fat_100g', '').strip()
-        carbon_footprint_100g = self.request.GET.get('carbon_footprint_100g', '').strip()
+        ecoscore = self.request.GET.get('ecoscore', '').strip()
+        ingredients = self.request.GET.get('ingredients', '')
 
         if product_name:
             qs = qs.filter(product_name__icontains=product_name)
@@ -43,19 +40,11 @@ class ProductsListView(ListView):
             qs = qs.filter(origins__icontains=origins)
         if nutrition_grade_fr:
             qs = qs.filter(nutritional_info__nutrition_grade_fr=nutrition_grade_fr)
+        if ecoscore:
+            qs = qs.filter(environmental_info__ecoscore_grade=ecoscore)
         if ingredients:
             qs = qs.filter(ingredients_text__icontains=ingredients)
-        if energy_kcal_100g:
-            qs = qs.filter(nutritional_info__energy_kcal_100g__gte=energy_kcal_100g)
-        if proteins_100g:
-            qs = qs.filter(nutritional_info__proteins_100g__gte=proteins_100g)
-        if carbohydrates_100g:
-            qs = qs.filter(nutritional_info__carbohydrates_100g__gte=carbohydrates_100g)
-        if fat_100g:
-            qs = qs.filter(nutritional_info__fat_100g__gte=fat_100g)
-        if carbon_footprint_100g:
-            qs = qs.filter(environmental_info__carbon_footprint_100g__gte=carbon_footprint_100g)
-        
+
         return qs
     
 class ProductDetailView(DetailView):
@@ -167,18 +156,136 @@ class ProductGraphsDetailView(DetailView):
         nutrition_grade_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
         context['nutrition_grade_graph'] = nutrition_grade_graph if (p.nutritional_info.nutrition_grade_fr) else "<p>Nutrition Grading data not available for this product.</p>"
         
-        fig = go.Figure(go.Indicator(mode="number+gauge", value=p.environmental_info.carbon_footprint_100g,
+        invalid_values = ['n/a', 'N/A', 'not-applicable', 'NOT-APPLICABLE', 'unknown', 'UNKNOWN', None]
+
+        # Check if the ecoscore is valid (not in the invalid_values list)
+        ecoscore = str(p.environmental_info.ecoscore_grade).strip()
+
+        if ecoscore == "a-plus" or ecoscore == "A-PLUS":
+            ecoscore = "A+"  # Special case for A+
+            grade_value = 1  # Assign a value higher than "A" (e.g., A+ = 1.5)
+            bar_color = 'darkgreen'  # Special color for "A+"
+        else:
+            if ecoscore not in invalid_values and len(ecoscore) == 1:
+                grade = ecoscore.upper()
+                if grade == "A":
+                    grade_value = 1  # Regular "A"
+                    bar_color = 'mediumgreen'
+                elif grade == "B":
+                    grade_value = 2
+                    bar_color = 'lightgreen'
+                elif grade == "C":
+                    grade_value = 3
+                    bar_color = 'yellow'
+                elif grade == "D":
+                    grade_value = 4
+                    bar_color = 'orange'
+                elif grade == "E":
+                    grade_value = 5
+                    bar_color = 'red'
+                elif grade == "F":
+                    grade_value = 6
+                    bar_color = 'darkred'
+                else:
+                    grade_value = 0
+                    bar_color = 'gray'
+            else:
+                grade_value = 0
+                bar_color = 'gray'
+
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number", 
+            value=grade_value,
             gauge={
-                "axis": {"range": [0, 100]},
-                "bar": {"color": "green" if p.environmental_info.carbon_footprint_100g <= 50 else "red"}
+                "axis": {
+                    "range": [0, 6],
+                    "tickvals": [0, 1, 2, 3, 4, 5, 6, 7],
+                    "ticktext": ["", "A+", "A", "B", "C", "D", "E", "F"]
+                },
+                "bar": {"color": bar_color}
             }
         ))
-        fig.update_layout(title_text="Carbon Footprint (g CO₂ per 100g)")
-        carbon_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
-        context['carbon_graph'] = carbon_graph if (p.environmental_info.carbon_footprint_100g >= 0) else "<p>Environmental comparative data not displayed for this product.</p>"
-        
+        fig.update_layout(title_text="Ecoscore Grade")
+        ecoscore_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
+
+        # Add the graph to the context if the ecoscore is valid
+        if ecoscore not in invalid_values:
+            context['ecoscore_graph'] = ecoscore_graph
+        else:
+            context['ecoscore_graph'] = "<p>Ecoscore data not displayed for this product.</p>"
+
+        return context
+
+
+class UpdateProductView(UpdateView):
+    model = Product
+    template_name = 'project/update_product.html'
+    context_object_name = 'p'
+    fields = [
+        'product_name', 'categories', 'origins', 'manufacturing_places', 'countries',
+        'ingredients_text', 'traces', 'nutritional_info', 'environmental_info', 'causes'
+    ]  # Base fields in your Product model
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pass the ecoscore choices as a list
+        context = super().get_context_data(**kwargs)
+        # Pass the choices for ecoscore and nutrition grades
+        context['ecoscore_choices'] = ['a-plus', 'a', 'b', 'c', 'd', 'e', 'f']
+        context['nutrition_grade_choices'] = ['A', 'B', 'C', 'D', 'E']
+        context['causes'] = Cause.objects.all()
         return context
     
+    def form_valid(self, form):
+        product = form.save(commit=False)
+        # Update related models here
+
+        # Update Brands
+        brands_input = self.request.POST.get('brands', '')
+        if brands_input:
+            brand_names = [name.strip() for name in brands_input.split(',')]
+            product.brands.clear()
+            for brand_name in brand_names:
+                brand, _ = Brand.objects.get_or_create(brand_name=brand_name)
+                product.brands.add(brand)
+
+        # Update Nutritional Info
+        nutritional_data = {
+            'energy_kcal_100g': self.request.POST.get('energy_kcal_100g'),
+            'proteins_100g': self.request.POST.get('proteins_100g'),
+            'carbohydrates_100g': self.request.POST.get('carbohydrates_100g'),
+            'fat_100g': self.request.POST.get('fat_100g'),
+            'nutrition_grade_fr': self.request.POST.get('nutrition_grade_fr'),
+        }
+        if product.nutritional_info:
+            for field, value in nutritional_data.items():
+                setattr(product.nutritional_info, field, value)
+            product.nutritional_info.save()
+        else:
+            nutritional_info = NutritionalInfo.objects.create(**nutritional_data)
+            product.nutritional_info = nutritional_info
+
+        # Update Environmental Info
+        environmental_data = {
+            'carbon_footprint_100g': self.request.POST.get('carbon_footprint_100g'),
+            'ecoscore_grade': self.request.POST.get('ecoscore'),
+        }
+        if product.environmental_info:
+            for field, value in environmental_data.items():
+                setattr(product.environmental_info, field, value)
+            product.environmental_info.save()
+        else:
+            environmental_info = EnvironmentalInfo.objects.create(**environmental_data)
+            product.environmental_info = environmental_info
+
+        causes_ids = self.request.POST.getlist('causes')  # Get selected causes as a list
+        causes = Cause.objects.filter(pk__in=causes_ids)  # Fetch the Cause objects
+        self.object.causes.set(causes)  # Update the product's causes
+
+        # Save the updated product
+        product.save()
+        return redirect(product.get_absolute_url())
+
 class ProductsByNutritionView(ListView):
     '''View to display product results by nutrition grade'''
     template_name = 'project/nutrition_results.html'
@@ -188,10 +295,25 @@ class ProductsByNutritionView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.order_by('nutritional_info__nutrition_grade_fr')
+        
+        # Order by nutrition grade with NULL, "unknown", and "N/A" values at the end
+        qs = qs.annotate(
+            nutrition_grade_order=Case(
+                When(nutritional_info__nutrition_grade_fr__in=['unknown', 'n/a','UNKNOWN', 'NOT-APPLICABLE', 'N/A',None], then=Value(999)),
+                When(nutritional_info__nutrition_grade_fr='A', then=Value(1)),
+                When(nutritional_info__nutrition_grade_fr='B', then=Value(2)),
+                When(nutritional_info__nutrition_grade_fr='C', then=Value(3)),
+                When(nutritional_info__nutrition_grade_fr='D', then=Value(4)),
+                When(nutritional_info__nutrition_grade_fr='E', then=Value(5)),
+                default=Value(999),
+                output_field=CharField()
+            )
+        ).order_by('nutrition_grade_order')
+        
+        return qs
 
 class ProductsByEnvImpactView(ListView):
-    '''View to display product results by nutrition grade'''
+    '''View to display product results by environmental impact (ecoscore)'''
     template_name = 'project/env_impact_results.html'
     model = Product
     context_object_name = 'products'
@@ -199,8 +321,24 @@ class ProductsByEnvImpactView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        # this currently returns a > a+, need to FIX + capitalize
-        return qs.order_by('environmental_info__ecoscore_grade')
+        
+        # Order by ecoscore grade with "A+" always first and unknown values last
+        qs = qs.annotate(
+            ecoscore_order=Case(
+                When(environmental_info__ecoscore_grade__in=['unknown', 'n/a','UNKNOWN', 'NOT-APPLICABLE', 'N/A',None], then=Value(999)),
+                When(environmental_info__ecoscore_grade='a-plus', then=Value(1)),  # "A+" ranked first
+                When(environmental_info__ecoscore_grade='a', then=Value(2)),
+                When(environmental_info__ecoscore_grade='b', then=Value(3)),
+                When(environmental_info__ecoscore_grade='c', then=Value(4)),
+                When(environmental_info__ecoscore_grade='d', then=Value(5)),
+                When(environmental_info__ecoscore_grade='e', then=Value(6)),
+                When(environmental_info__ecoscore_grade='f', then=Value(7)),
+                default=Value(999),
+                output_field=CharField()
+            )
+        ).order_by('ecoscore_order')
+        
+        return qs
     
 class CauseListView(ListView):
     '''View to display product results by nutrition grade'''
@@ -252,6 +390,3 @@ class ShowCauseCategoryView(DetailView):
         context['products'] = products
         context['category'] = cause.category
         return context
-    
-    # product page: 
-    #   + comparison tab (products similar nutritionally, environmentally)
