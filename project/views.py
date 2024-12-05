@@ -128,7 +128,8 @@ class ProductGraphsDetailView(DetailView):
 
         geo_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
         context['geo_graph'] = geo_graph if (origins or manufacturing_places or countries) else "<p>Geographical data not available for this product.</p>"
-        
+
+
         if p.nutritional_info.nutrition_grade_fr:
             grade = p.nutritional_info.nutrition_grade_fr.upper()
             grade_value = ord(grade) - ord('A') + 1

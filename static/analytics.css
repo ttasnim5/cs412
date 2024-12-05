@@ -2,10 +2,10 @@ nav ul {
     list-style-type: none; 
     display: flex;
     gap: 1rem;
-    padding: 0;
-    margin: .5rem;
+    padding: .5rem;
+    background-color: #7f910a;
 }
-nav ul li {
+.tab {
     display: inline-flex; 
     align-items: center;  
     justify-content: center;
@@ -20,21 +20,23 @@ nav ul li {
     transition: background-color 0.3s ease;
 }
 
-nav ul li:hover {
+.tab:hover {
     background-color: #08aa9a;
 }
-nav ul li:hover a {
+.tab:hover a {
     color: white;
 }
 
-nav ul li a {
+.tab a {
     color:black;
 }
 
 .title {
-    border-bottom: 1px solid #7f910a;
-    line-height: 1rem;
+    border-bottom: 1px solid #2c3202;
+    margin-bottom: .25rem;
+    margin-left: .25rem;
 }
+.title h2 {color: white;}
 
 ul {
     list-style: none;
@@ -174,7 +176,7 @@ select {
 
 /* Form container styling */
 form {
-    margin: 2rem auto;
+    /* margin: 2rem auto; */
     background-color: #dedfff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

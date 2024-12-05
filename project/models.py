@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
-import requests
+from googletrans import Translator
+import requests, time
 
 class Cause(models.Model):
     title = models.CharField(max_length=255)  # Specific cause title
@@ -135,7 +136,45 @@ def analyze_causes(product_data):
 
     return inferred_causes
 
+translator = Translator()
+
+def split_and_space(text, delimiter=","):
+    """Split concatenated strings and ensure spacing after delimiter."""
+    return delimiter.join(part.strip() for part in text.split(delimiter))
+
+translator = Translator()
+
+def translate_to_english(text):
+    """Translate text to English using Google Translator."""
+    if not text:
+        return text  # Return original if text is empty or None
+    
+    try:
+        # Retry mechanism for transient errors
+        for attempt in range(3):  # Try up to 3 times
+            try:
+                translated = translator.translate(text, src='auto', dest='en')
+                return translated.text
+            except Exception as e:
+                print(f"Translation attempt {attempt + 1} failed for '{text}': {e}")
+                time.sleep(1)  # Wait before retrying
+        # If all retries fail, return the original text
+        return text
+    except AttributeError as e:
+        print(f"Translation error for text '{text}': {e}")
+        return text
+    except Exception as e:
+        print(f"Unexpected translation error for text '{text}': {e}")
+        return text
+
+
+def remove_language_tags(text, tag="en:"):
+    """Remove language tags like 'en:' from the text."""
+    return ", ".join(item.replace(tag, "").strip() for item in text.split(',') if tag in item)
+
 def get_data():
+    """Fetch and clean product data from OpenFoodFacts API."""
+    # Clear existing data
     Product.objects.all().delete()
     Cause.objects.all().delete()
     NutritionalInfo.objects.all().delete()
@@ -162,6 +201,12 @@ def get_data():
         products = data.get('products', [])
 
         for product in products:
+            # Clean text fields
+            categories_cleaned = translate_to_english(split_and_space(product.get('categories', '')))
+            countries_cleaned = translate_to_english(split_and_space(product.get('countries', '')))
+            ingredients_cleaned = translate_to_english(split_and_space(product.get('ingredients_text', '')))
+            traces_cleaned = remove_language_tags(product.get('traces', ''))
+
             # Nutritional Info
             nutritional_data = {
                 'energy_kcal_100g': product.get('nutriments', {}).get('energy-kcal_100g', 0),
@@ -186,16 +231,16 @@ def get_data():
 
             # Product Data
             product_data = {
-                'product_name': product.get('product_name', '').replace('\n', ' ').replace('\r', ' '),
+                'product_name': translate_to_english(product.get('product_name', '')).replace('\n', ' ').replace('\r', ' '),
                 'code': product.get('code', ''),
-                'categories': product.get('categories', '').replace('\n', ' ').replace('\r', ' '),
+                'categories': categories_cleaned,
                 'categories_tags': str(product.get('categories_tags', '')),
-                'origins': product.get('origins', '').replace('\n', ' ').replace('\r', ' '),
-                'manufacturing_places': product.get('manufacturing_places', '').replace('\n', ' ').replace('\r', ' '),
-                'countries': product.get('countries', '').replace('\n', ' ').replace('\r', ' '),
-                'main_category': product.get('main_category', '').replace('\n', ' ').replace('\r', ' '),
-                'ingredients_text': product.get('ingredients_text', '').replace('\n', ' ').replace('\r', ' '),
-                'traces': product.get('traces', '').replace('\n', ' ').replace('\r', ' '),
+                'origins': translate_to_english(product.get('origins', '')),
+                'manufacturing_places': translate_to_english(product.get('manufacturing_places', '')),
+                'countries': countries_cleaned,
+                'main_category': translate_to_english(product.get('main_category', '')),
+                'ingredients_text': ingredients_cleaned,
+                'traces': traces_cleaned,
                 'nutritional_info': nutritional_info,
                 'environmental_info': environmental_info,
             }
@@ -203,21 +248,20 @@ def get_data():
             prod.save()
 
             # Brand Association
-            brand_names = product.get('brands', '').split(',')
+            brand_names = split_and_space(product.get('brands', '')).split(',')
             brand_objects = []
             for brand_name in brand_names:
                 brand_name = brand_name.strip()
                 if brand_name:
                     brand, _ = Brand.objects.get_or_create(brand_name=brand_name)
                     brand_objects.append(brand)
-                    # update product categories for brand
                     if not brand.product_categories:
-                        brand.product_categories = product_data['categories']
+                        brand.product_categories = categories_cleaned
                         brand.save()
                     prod.brands.add(brand)
 
-            # infer and associate causes
-            causes = analyze_causes(product)
+            # Infer and associate causes
+            causes = analyze_causes(product)  # Ensure analyze_causes handles cleaned data
             prod.causes.add(*causes)
 
             print(f"Created Product: {prod.product_name} with {len(causes)} causes.")

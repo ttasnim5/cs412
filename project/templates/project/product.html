@@ -96,9 +96,6 @@
             {% csrf_token %}
             <input type="submit" value="Delete Product" class="button">
         </form>
-        <form method="get" action="{% url 'home' %}">
-            <input type="submit" value="Cancel" class="button">
-        </form>    
     {% endif %}
 
 </div>
