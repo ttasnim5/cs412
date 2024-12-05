@@ -8,8 +8,6 @@ from . forms import *
 
 import plotly
 import plotly.graph_objs as go
-
-# todo list: add navbar, separate out and translate the origins, manufacture places, ingredients, categories
    
 class ProductsListView(ListView):
     '''View to display product results'''
