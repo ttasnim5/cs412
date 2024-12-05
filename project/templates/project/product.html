@@ -87,8 +87,20 @@
         {% endfor %}
     </table>
 
-    <h3>See information thats missing or incorrect? Help us fix it!</h3>
-    <a href="{% url 'update_product' p.pk %}"><div class="button"><h3>Update This Product</h3></div></a>
+    {% if request.user.is_authenticated %}
+        <h3>Update Product Information</h3>
+        <a href="{% url 'update_product' p.pk %}"><div class="button"><h3>Update This Product</h3></div></a>
+
+        <h2>Delete Product</h2>
+        <form method="post" action="{% url 'delete_product' p.pk %}">
+            {% csrf_token %}
+            <input type="submit" value="Delete Product" class="button">
+        </form>
+        <form method="get" action="{% url 'home' %}">
+            <input type="submit" value="Cancel" class="button">
+        </form>    
+    {% endif %}
+
 </div>
 
 {% endblock %}

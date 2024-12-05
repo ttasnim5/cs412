@@ -1,16 +1,15 @@
 from django.db.models import Case, When, Value, CharField
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.db.models.query import QuerySet
-from django.views.generic import ListView, DetailView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin 
+from django.views.generic import View, ListView, DetailView, UpdateView, DeleteView
 from . models import *
+from . forms import *
 
 import plotly
 import plotly.graph_objs as go
 
-# todo list: separate out and translate the origins, manufacture places, ingredients, categories
-# make buttons smaller ??
-# fix a vs a-plus and capitalization with ecoscore
-#  add a data add/change/delete option for each product
+# todo list: add navbar, separate out and translate the origins, manufacture places, ingredients, categories
    
 class ProductsListView(ListView):
     '''View to display product results'''
@@ -158,13 +157,13 @@ class ProductGraphsDetailView(DetailView):
         
         invalid_values = ['n/a', 'N/A', 'not-applicable', 'NOT-APPLICABLE', 'unknown', 'UNKNOWN', None]
 
-        # Check if the ecoscore is valid (not in the invalid_values list)
+        # check if the ecoscore is valid (not in the invalid_values list)
         ecoscore = str(p.environmental_info.ecoscore_grade).strip()
 
         if ecoscore == "a-plus" or ecoscore == "A-PLUS":
-            ecoscore = "A+"  # Special case for A+
-            grade_value = 1  # Assign a value higher than "A" (e.g., A+ = 1.5)
-            bar_color = 'darkgreen'  # Special color for "A+"
+            ecoscore = "A+"  # special case for A+
+            grade_value = 1  # assign a value higher than "A" (e.g., A+ = 1.5)
+            bar_color = 'darkgreen'  # special color for "A+"
         else:
             if ecoscore not in invalid_values and len(ecoscore) == 1:
                 grade = ecoscore.upper()
@@ -208,7 +207,7 @@ class ProductGraphsDetailView(DetailView):
         fig.update_layout(title_text="Ecoscore Grade")
         ecoscore_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
 
-        # Add the graph to the context if the ecoscore is valid
+        # add the graph to the context if the ecoscore is valid
         if ecoscore not in invalid_values:
             context['ecoscore_graph'] = ecoscore_graph
         else:
@@ -217,20 +216,20 @@ class ProductGraphsDetailView(DetailView):
         return context
 
 
-class UpdateProductView(UpdateView):
+class UpdateProductView(LoginRequiredMixin, UpdateView):
     model = Product
     template_name = 'project/update_product.html'
     context_object_name = 'p'
     fields = [
         'product_name', 'categories', 'origins', 'manufacturing_places', 'countries',
         'ingredients_text', 'traces', 'nutritional_info', 'environmental_info', 'causes'
-    ]  # Base fields in your Product model
+    ]  # base fields in your Product model
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Pass the ecoscore choices as a list
+        # pass the ecoscore choices as a list
         context = super().get_context_data(**kwargs)
-        # Pass the choices for ecoscore and nutrition grades
+        # pass the choices for ecoscore and nutrition grades
         context['ecoscore_choices'] = ['a-plus', 'a', 'b', 'c', 'd', 'e', 'f']
         context['nutrition_grade_choices'] = ['A', 'B', 'C', 'D', 'E']
         context['causes'] = Cause.objects.all()
@@ -278,11 +277,10 @@ class UpdateProductView(UpdateView):
             environmental_info = EnvironmentalInfo.objects.create(**environmental_data)
             product.environmental_info = environmental_info
 
-        causes_ids = self.request.POST.getlist('causes')  # Get selected causes as a list
-        causes = Cause.objects.filter(pk__in=causes_ids)  # Fetch the Cause objects
-        self.object.causes.set(causes)  # Update the product's causes
+        causes_ids = self.request.POST.getlist('causes')  # get selected causes as a list
+        causes = Cause.objects.filter(pk__in=causes_ids)  # fetch the Cause objects
+        self.object.causes.set(causes)  # update the product's causes
 
-        # Save the updated product
         product.save()
         return redirect(product.get_absolute_url())
 
@@ -296,7 +294,7 @@ class ProductsByNutritionView(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         
-        # Order by nutrition grade with NULL, "unknown", and "N/A" values at the end
+        # order by nutrition grade with NULL, "unknown", and "N/A" values at the end
         qs = qs.annotate(
             nutrition_grade_order=Case(
                 When(nutritional_info__nutrition_grade_fr__in=['unknown', 'n/a','UNKNOWN', 'NOT-APPLICABLE', 'N/A',None], then=Value(999)),
@@ -322,7 +320,7 @@ class ProductsByEnvImpactView(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         
-        # Order by ecoscore grade with "A+" always first and unknown values last
+        # order by ecoscore grade with "A+" always first and unknown values last
         qs = qs.annotate(
             ecoscore_order=Case(
                 When(environmental_info__ecoscore_grade__in=['unknown', 'n/a','UNKNOWN', 'NOT-APPLICABLE', 'N/A',None], then=Value(999)),
@@ -352,13 +350,14 @@ class ShowBrandPageView(DetailView):
     '''Displays the detail of a specific cause by their primary key'''
     model = Brand  # specifies which model to use for this view
     template_name = 'project/show_brand.html'  
-    context_object_name = 'brand'  # name to use for the profile object in the template
+    context_object_name = 'brand'  # name to use for the product object in the template
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         brand = self.get_object()  # get the current object
         products = brand.products.all()
         # related_name="products" overrides the default reverse accessor (product_set) with products
+        # add num products, possibly a search for products ?
         context['products'] = products 
         return context
 
@@ -366,7 +365,7 @@ class ShowCausePageView(DetailView):
     '''Displays the detail of a specific cause by their primary key'''
     model = Cause  # specifies which model to use for this view
     template_name = 'project/show_cause.html'  
-    context_object_name = 'cause'  # name to use for the profile object in the template
+    context_object_name = 'cause'  # name to use for the product object in the template
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -390,3 +389,44 @@ class ShowCauseCategoryView(DetailView):
         context['products'] = products
         context['category'] = cause.category
         return context
+    
+class DeleteProductView(LoginRequiredMixin, DeleteView):
+    '''Displays and processes form to delete a specific product'''
+    model = Product 
+    template_name = 'project/delete_product.html'  
+    context_object_name = 'product'  # name to use for the  object in the template
+
+    def get_success_url(self): # redirect to the product page after deletion
+        return reverse('home')
+
+class CreateProductView(View):
+    def get(self, request):
+        product_form = CreateProductForm()
+        nutritional_form = NutritionalInfoForm()
+        environmental_form = EnvironmentalInfoForm()
+        return render(request, 'project/create_product.html', {
+            'product_form': product_form,
+            'nutritional_form': nutritional_form,
+            'environmental_form': environmental_form,
+        })
+
+    def post(self, request):
+        product_form = CreateProductForm(request.POST)
+        nutritional_form = NutritionalInfoForm(request.POST)
+        environmental_form = EnvironmentalInfoForm(request.POST)
+
+        if product_form.is_valid() and nutritional_form.is_valid() and environmental_form.is_valid():
+            nutritional_info = nutritional_form.save()
+            environmental_info = environmental_form.save()
+            product = product_form.save(commit=False)
+            product.nutritional_info = nutritional_info
+            product.environmental_info = environmental_info
+            product.save()
+            product_form.save_m2m()  # save Many-to-Many relationships
+            return redirect('product', pk=product.pk)
+
+        return render(request, 'project/create_product.html', {
+            'product_form': product_form,
+            'nutritional_form': nutritional_form,
+            'environmental_form': environmental_form,
+        })

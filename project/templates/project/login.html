@@ -1,0 +1,21 @@
+<!-- blog/templats/blog/login.html -->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h1>Login</h1>
+
+<!-- a very basic authentication form -->
+<form method="POST" action="{% url 'login' %}">
+
+    {% csrf_token %}
+    {{form}}
+    <!-- what to do after login success -->
+    {% if request.GET.next %}
+    <input type="hidden" name="next" value="{{request.GET.next}}">
+    {% else %}
+    <input type="hidden" name="next" value="{% url 'home' %}">
+    {% endif %}
+    <input type="submit" value="Login">
+
+</form>
+{% endblock %}

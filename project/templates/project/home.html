@@ -7,6 +7,13 @@
     </div>
 
     <h1>Products</h1>
+    {% if request.user.is_authenticated %}
+        <form method="POST" action="{% url 'create_product' %}">
+            {% csrf_token %}
+            <input type="submit" value="Add new product">
+        </form>
+    {% endif %}
+
     <p> Entries shown: {{ products|length }}</p>
     <div>
         <table>

@@ -12,7 +12,7 @@
             <td class="name">
                 <a href="{% url 'product' p.pk %}"><p>{{ p.product_name|default:"N/A" }}</p></a>
             </td>
-            <td>
+            <td class="name">
                 {% if p.brands.all %}
                     {% for brand in p.brands.all %}
                         <a href="{% url 'show_brand' brand.pk %}">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}

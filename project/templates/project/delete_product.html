@@ -1,0 +1,30 @@
+{% extends 'mini_fb/base.html' %}
+{% block content %}
+
+<div>
+    <h2>Are you sure you want to delete this product?</h2>
+    <form method="post" action="{% url 'delete_product' product.pk %}">
+        {% csrf_token %}
+        <input type="submit" value="Delete Product" class="button">
+    </form>
+    <form method="get" action="{% url 'home' %}">
+        <input type="submit" value="Cancel" class="button">
+    </form>
+</div>
+        
+<div>
+    <h3>
+        {{ p.product_name|default:"Unregistered Product Name" }} by 
+        {% if p.brands.all %}
+        {% for brand in p.brands.all %}
+            <a href="{% url 'show_brand' brand.pk %}" class="brand_name">{{ brand.brand_name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% else %}
+            N/A
+        {% endif %}
+    </h3>
+    <h3>Categories:</h3>
+    <p>{{ p.categories|default:"N/A" }}</p>
+</div>
+
+{% endblock %}

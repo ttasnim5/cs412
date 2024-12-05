@@ -13,6 +13,21 @@
                     <li><a href="{% url 'nutrition_results' %}">Products by Nutrition</a></li>
                     <li><a href="{% url 'env_impact_results' %}">Products by Environmental Impact</a></li>
                     <li><a href="{% url 'cause_list' %}">Our Causes</a></li>
+                    <!-- URLs that depend on authentication status -->                        
+                    {% if not request.user.is_authenticated %}
+                        <li><a href="{% url 'login' %}"><p>Log in</p></a></li>
+                    {% endif %}
+                        <li class="login-status"><!-- show who's logged in -->
+                            {% if request.user.is_authenticated %}
+                                <p>Logged in user: {{ request.user }}.</p>
+                                <form method="POST" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Logout">
+                                </form>
+                            {% else %}
+                                <p>Not logged in.</p>
+                            {% endif %}
+                        </li>
                 </ul>
             </nav>
         </header>
