@@ -7,6 +7,7 @@
     </div>
 
     <h1>Products</h1>
+    <!-- if user is authenticated, allow them to add a product -->
     {% if request.user.is_authenticated %}
         <form method="POST" action="{% url 'create_product' %}">
             {% csrf_token %}

@@ -17,6 +17,7 @@ class ProductsListView(ListView):
     paginate_by = 25
 
     def get_queryset(self):
+        '''Return data based on optional search filters.'''
         qs = super().get_queryset()
 
         product_name = self.request.GET.get('product_name', '').strip()
@@ -51,7 +52,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'p'
     
 class ProductGraphsDetailView(DetailView):
-    '''View to show detail page for one product.'''
+    '''View to show graphical data for one product.'''
     template_name = 'project/product_graph.html'
     model = Product
     context_object_name = 'p'
@@ -126,7 +127,6 @@ class ProductGraphsDetailView(DetailView):
 
         geo_graph = plotly.offline.plot(fig, auto_open=False, output_type="div")
         context['geo_graph'] = geo_graph if (origins or manufacturing_places or countries) else "<p>Geographical data not available for this product.</p>"
-
 
         if p.nutritional_info.nutrition_grade_fr:
             grade = p.nutritional_info.nutrition_grade_fr.upper()
@@ -216,13 +216,14 @@ class ProductGraphsDetailView(DetailView):
 
 
 class UpdateProductView(LoginRequiredMixin, UpdateView):
+    '''Update the fileds of a product.'''
     model = Product
     template_name = 'project/update_product.html'
     context_object_name = 'p'
     fields = [
         'product_name', 'categories', 'origins', 'manufacturing_places', 'countries',
         'ingredients_text', 'traces', 'nutritional_info', 'environmental_info', 'causes'
-    ]  # base fields in your Product model
+    ] 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -236,9 +237,7 @@ class UpdateProductView(LoginRequiredMixin, UpdateView):
     
     def form_valid(self, form):
         product = form.save(commit=False)
-        # Update related models here
-
-        # Update Brands
+        # update brands
         brands_input = self.request.POST.get('brands', '')
         if brands_input:
             brand_names = [name.strip() for name in brands_input.split(',')]
@@ -247,7 +246,7 @@ class UpdateProductView(LoginRequiredMixin, UpdateView):
                 brand, _ = Brand.objects.get_or_create(brand_name=brand_name)
                 product.brands.add(brand)
 
-        # Update Nutritional Info
+        # update nutritional info
         nutritional_data = {
             'energy_kcal_100g': self.request.POST.get('energy_kcal_100g'),
             'proteins_100g': self.request.POST.get('proteins_100g'),
@@ -263,7 +262,7 @@ class UpdateProductView(LoginRequiredMixin, UpdateView):
             nutritional_info = NutritionalInfo.objects.create(**nutritional_data)
             product.nutritional_info = nutritional_info
 
-        # Update Environmental Info
+        # update environmental info
         environmental_data = {
             'carbon_footprint_100g': self.request.POST.get('carbon_footprint_100g'),
             'ecoscore_grade': self.request.POST.get('ecoscore'),
@@ -276,6 +275,7 @@ class UpdateProductView(LoginRequiredMixin, UpdateView):
             environmental_info = EnvironmentalInfo.objects.create(**environmental_data)
             product.environmental_info = environmental_info
 
+        # update causes
         causes_ids = self.request.POST.getlist('causes')  # get selected causes as a list
         causes = Cause.objects.filter(pk__in=causes_ids)  # fetch the Cause objects
         self.object.causes.set(causes)  # update the product's causes
@@ -292,7 +292,6 @@ class ProductsByNutritionView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        
         # order by nutrition grade with NULL, "unknown", and "N/A" values at the end
         qs = qs.annotate(
             nutrition_grade_order=Case(
@@ -318,7 +317,6 @@ class ProductsByEnvImpactView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        
         # order by ecoscore grade with "A+" always first and unknown values last
         qs = qs.annotate(
             ecoscore_order=Case(
@@ -338,15 +336,14 @@ class ProductsByEnvImpactView(ListView):
         return qs
     
 class CauseListView(ListView):
-    '''View to display product results by nutrition grade'''
-    # put an arder by __ checkbox option on these
+    '''View to display product results by according to a cause.'''
     template_name = 'project/cause_list.html'
     model = Cause
     context_object_name = 'causes'
     paginate_by = 25
 
 class ShowBrandPageView(DetailView):
-    '''Displays the detail of a specific cause by their primary key'''
+    '''Displays the detail of a specific brand by their primary key'''
     model = Brand  # specifies which model to use for this view
     template_name = 'project/show_brand.html'  
     context_object_name = 'brand'  # name to use for the product object in the template
@@ -356,7 +353,6 @@ class ShowBrandPageView(DetailView):
         brand = self.get_object()  # get the current object
         products = brand.products.all()
         # related_name="products" overrides the default reverse accessor (product_set) with products
-        # add num products, possibly a search for products ?
         context['products'] = products 
         return context
 
@@ -393,13 +389,15 @@ class DeleteProductView(LoginRequiredMixin, DeleteView):
     '''Displays and processes form to delete a specific product'''
     model = Product 
     template_name = 'project/delete_product.html'  
-    context_object_name = 'product'  # name to use for the  object in the template
+    context_object_name = 'product'  
 
     def get_success_url(self): # redirect to the product page after deletion
         return reverse('home')
 
 class CreateProductView(View):
+    '''Displays and processed form to create a new product and add to database'''
     def get(self, request):
+        # information from all three is needed to create a basic product
         product_form = CreateProductForm()
         nutritional_form = NutritionalInfoForm()
         environmental_form = EnvironmentalInfoForm()

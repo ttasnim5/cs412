@@ -4,7 +4,6 @@ from django.contrib.auth import views as auth_views
 from . import views 
 
 urlpatterns = [
-    # map the URL (empty string) to the view
     path(r'', views.ProductsListView.as_view(), name='home'),
     path(r'nutrition_results', views.ProductsByNutritionView.as_view(), name='nutrition_results'),
     path(r'env_impact_results', views.ProductsByEnvImpactView.as_view(), name='env_impact_results'),

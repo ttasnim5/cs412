@@ -4,7 +4,8 @@ from googletrans import Translator
 import requests, time
 
 class Cause(models.Model):
-    title = models.CharField(max_length=255)  # Specific cause title
+    '''Model for a social cause, to relate to a Product'''
+    title = models.CharField(max_length=255)  # specific cause title
     category = models.CharField(
         max_length=50,
         choices=[
@@ -31,6 +32,7 @@ class Brand(models.Model):
         return f'{self.brand_name}'
 
 class EnvironmentalInfo(models.Model):
+    '''Store/represent the data relating to environmental information of a product'''
     carbon_footprint_100g = models.IntegerField(null=True, blank=True, default=0)
     ecoscore_grade = models.TextField(null=True, blank=True, default="N/A")
     packaging = models.TextField(null=True, blank=True, default="N/A")
@@ -45,6 +47,7 @@ class EnvironmentalInfo(models.Model):
 
 
 class NutritionalInfo(models.Model):
+    '''Store/represent the data relating to nutritional information of a product'''
     energy_kcal_100g = models.IntegerField(null=True, blank=True, default=0)
     proteins_100g = models.IntegerField(null=True, blank=True, default=0)
     carbohydrates_100g = models.IntegerField(null=True, blank=True, default=0)
@@ -54,8 +57,8 @@ class NutritionalInfo(models.Model):
     def __str__(self):
         return f"Nutritional Info (Grade: {self.nutrition_grade_fr})"
 
-
 class Product(models.Model):
+    '''Store/represent the data of a Product'''
     product_name = models.TextField(default="N/A")
     code = models.TextField(default="N/A")
     categories = models.TextField(null=True, blank=True, default="N/A")
@@ -83,13 +86,13 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.product_name} by {self.get_brands()}"
 
-###################################################################################
+# everything below here is related to data loading from api
 
 def analyze_causes(product_data):
     """Infer causes for a product based on its data."""
     inferred_causes = []
 
-    # Environmental Impact
+    #environmental impact
     ecoscore = product_data.get("ecoscore_grade", "").lower()
     if ecoscore in ["a", "b"]:
         environmental_cause, _ = Cause.objects.get_or_create(
@@ -115,7 +118,7 @@ def analyze_causes(product_data):
             )[0]
             inferred_causes.append(vegetarian_cause)
 
-    # Health & Nutrition
+    # health & nutrition
     healthy = product_data.get('nutrition_grade_fr', '').upper()
     if healthy in ["A", "B"]:
         healthy_cause, _ = Cause.objects.get_or_create(
@@ -125,7 +128,7 @@ def analyze_causes(product_data):
         )
         inferred_causes.append(healthy_cause)
 
-    # Ethical Marketing
+    # ethical marketing
     if "organic" in product_data.get("categories_tags", []):
         organic_cause, _ = Cause.objects.get_or_create(
             title="Certified Organic",
@@ -136,6 +139,7 @@ def analyze_causes(product_data):
 
     return inferred_causes
 
+# to translate from other langs to english
 translator = Translator()
 
 def split_and_space(text, delimiter=","):
@@ -147,18 +151,17 @@ translator = Translator()
 def translate_to_english(text):
     """Translate text to English using Google Translator."""
     if not text:
-        return text  # Return original if text is empty or None
-    
+        return text  # return original if text is empty or None
     try:
-        # Retry mechanism for transient errors
-        for attempt in range(3):  # Try up to 3 times
+        # retry mechanism for transient errors
+        for attempt in range(3):  # try up to 3 times
             try:
                 translated = translator.translate(text, src='auto', dest='en')
                 return translated.text
             except Exception as e:
                 print(f"Translation attempt {attempt + 1} failed for '{text}': {e}")
-                time.sleep(1)  # Wait before retrying
-        # If all retries fail, return the original text
+                time.sleep(1)  # wait before retrying
+        # if all retries fail, return the original text
         return text
     except AttributeError as e:
         print(f"Translation error for text '{text}': {e}")
@@ -167,14 +170,13 @@ def translate_to_english(text):
         print(f"Unexpected translation error for text '{text}': {e}")
         return text
 
-
 def remove_language_tags(text, tag="en:"):
     """Remove language tags like 'en:' from the text."""
     return ", ".join(item.replace(tag, "").strip() for item in text.split(',') if tag in item)
 
 def get_data():
     """Fetch and clean product data from OpenFoodFacts API."""
-    # Clear existing data
+    # clear existing data
     Product.objects.all().delete()
     Cause.objects.all().delete()
     NutritionalInfo.objects.all().delete()
@@ -201,13 +203,13 @@ def get_data():
         products = data.get('products', [])
 
         for product in products:
-            # Clean text fields
+            # clean text fields
             categories_cleaned = translate_to_english(split_and_space(product.get('categories', '')))
             countries_cleaned = translate_to_english(split_and_space(product.get('countries', '')))
             ingredients_cleaned = translate_to_english(split_and_space(product.get('ingredients_text', '')))
             traces_cleaned = remove_language_tags(product.get('traces', ''))
 
-            # Nutritional Info
+            # nutritional info
             nutritional_data = {
                 'energy_kcal_100g': product.get('nutriments', {}).get('energy-kcal_100g', 0),
                 'proteins_100g': product.get('nutriments', {}).get('proteins_100g', 0),
@@ -218,7 +220,7 @@ def get_data():
             nutritional_info = NutritionalInfo(**nutritional_data)
             nutritional_info.save()
 
-            # Environmental Info
+            # environmental info
             environmental_data = {
                 'carbon_footprint_100g': product.get('nutriments', {}).get('carbon-footprint_100g', 0),
                 'ecoscore_grade': product.get('ecoscore_grade'),
@@ -229,7 +231,7 @@ def get_data():
             environmental_info = EnvironmentalInfo(**environmental_data)
             environmental_info.save()
 
-            # Product Data
+            # product data
             product_data = {
                 'product_name': translate_to_english(product.get('product_name', '')).replace('\n', ' ').replace('\r', ' '),
                 'code': product.get('code', ''),
@@ -247,7 +249,7 @@ def get_data():
             prod = Product(**product_data)
             prod.save()
 
-            # Brand Association
+            # brand association
             brand_names = split_and_space(product.get('brands', '')).split(',')
             brand_objects = []
             for brand_name in brand_names:
@@ -260,8 +262,8 @@ def get_data():
                         brand.save()
                     prod.brands.add(brand)
 
-            # Infer and associate causes
-            causes = analyze_causes(product)  # Ensure analyze_causes handles cleaned data
+            # infer and associate causes
+            causes = analyze_causes(product)
             prod.causes.add(*causes)
 
             print(f"Created Product: {prod.product_name} with {len(causes)} causes.")

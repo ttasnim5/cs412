@@ -5,7 +5,7 @@
 <form method="post" action="{% url 'update_product' p.pk %}">
     {% csrf_token %}
     <table>
-        <!-- Product Information -->
+        <!-- product info -->
         <tr>
             <th><h3>Product Name:</h3></th>
             <td><input type="text" name="product_name" value="{{ p.product_name }}"></td>
@@ -33,7 +33,7 @@
             <td><textarea name="countries" rows="3">{{ p.countries }}</textarea></td>
         </tr>
 
-        <!-- Environmental Information -->
+        <!-- environemtnal info -->
         <tr>
             <th><h3>EcoScore:</h3></th>
             <td>
@@ -61,7 +61,7 @@
             <td><textarea name="production_system" rows="3">{{ p.environmental_info.production_system }}</textarea></td>
         </tr>
 
-        <!-- Nutritional Information -->
+        <!-- nutritional info -->
         <tr>
             <th><h3>Energy (kcal per 100g):</h3></th>
             <td><input type="number" name="energy_kcal_100g" value="{{ p.nutritional_info.energy_kcal_100g }}"></td>
@@ -92,7 +92,7 @@
             </td>
         </tr>        
 
-        <!-- Causes (Many-to-Many Relationship) -->
+        <!-- causes (Many-to-Many Relationship) -->
         <tr>
             <th>
                 <h3>Causes:</h3>
@@ -110,7 +110,6 @@
         </tr>
     </table>
 
-    <!-- Submit Button -->
     <input type="submit" value="Update">
 </form>
 

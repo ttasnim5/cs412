@@ -87,6 +87,7 @@
         {% endfor %}
     </table>
 
+    <!-- allow user to update/delete product if authenticated -->
     {% if request.user.is_authenticated %}
         <h3>Update Product Information</h3>
         <a href="{% url 'update_product' p.pk %}"><div class="button"><h3>Update This Product</h3></div></a>

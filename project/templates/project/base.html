@@ -14,6 +14,7 @@
                     <li class="tab"><a href="{% url 'nutrition_results' %}">Products by Nutrition</a></li>
                     <li class="tab"><a href="{% url 'env_impact_results' %}">Products by Env-Impact</a></li>
                     <li class="tab"><a href="{% url 'cause_list' %}">Our Causes</a></li>
+                    <!-- authentication -->
                     <li class="login-status">                     
                     {% if request.user.is_authenticated %}
                         <li class="login-status">
