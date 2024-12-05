@@ -162,13 +162,13 @@ class ProductGraphsDetailView(DetailView):
         if ecoscore == "a-plus" or ecoscore == "A-PLUS":
             ecoscore = "A+"  # special case for A+
             grade_value = 1  # assign a value higher than "A" (e.g., A+ = 1.5)
-            bar_color = 'darkgreen'  # special color for "A+"
+            bar_color = 'blue'  # special color for "A+"
         else:
             if ecoscore not in invalid_values and len(ecoscore) == 1:
                 grade = ecoscore.upper()
                 if grade == "A":
                     grade_value = 1  # Regular "A"
-                    bar_color = 'mediumgreen'
+                    bar_color = 'darkgreen'
                 elif grade == "B":
                     grade_value = 2
                     bar_color = 'lightgreen'
